@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>LaserShow</title>
+    <base href="/" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="icon" type="image/png" href="images/favicon.webp" />
+    <link href="css/app.css" rel="stylesheet" />
+    <link href="css/site.css" rel="stylesheet" />
+    <link href="_content/BlazorScheduler/css/styles.css" rel="stylesheet" />
+</head>
+<body>
+    <div id="app">
+        <div style="
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        background: #0d0d1a;
+        font-family: 'Segoe UI', sans-serif;
+    ">
+            <!-- Внешнее кольцо фиолетовое -->
+            <div style="
+            position: relative;
+            width: 90px;
+            height: 90px;
+            margin-bottom: 35px;
+        ">
+                <div style="
+                position: absolute;
+                inset: 0;
+                border: 3px solid transparent;
+                border-top: 3px solid #b44fff;
+                border-right: 3px solid #b44fff;
+                border-radius: 50%;
+                animation: spin 1.2s linear infinite;
+                box-shadow: 0 0 15px #b44fff88;
+            "></div>
+                <!-- Внутреннее кольцо циановое -->
+                <div style="
+                position: absolute;
+                inset: 12px;
+                border: 3px solid transparent;
+                border-bottom: 3px solid #00e5ff;
+                border-left: 3px solid #00e5ff;
+                border-radius: 50%;
+                animation: spin-reverse 0.9s linear infinite;
+                box-shadow: 0 0 15px #00e5ff88;
+            "></div>
+                <!-- Центральная точка -->
+                <div style="
+                position: absolute;
+                inset: 38px;
+                background: #00e5ff;
+                border-radius: 50%;
+                box-shadow: 0 0 10px #00e5ff, 0 0 25px #00e5ff;
+                animation: pulse 1s ease-in-out infinite;
+            "></div>
+            </div>
+
+            <!-- Название -->
+            <div style="
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        ">
+                <span style="color:#00e5ff; text-shadow: 0 0 10px #00e5ff, 0 0 30px #00e5ffaa;">LASER</span>
+                <span style="color:#b44fff; text-shadow: 0 0 10px #b44fff, 0 0 30px #b44fffaa;">SHOW</span>
+            </div>
+
+            <!-- Подпись мигающая -->
+            <div style="
+            font-size: 11px;
+            color: #555;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            animation: pulse 1.8s ease-in-out infinite;
+        ">● загрузка ●</div>
+
+            <style>
+                @keyframes spin {
+                    0% {
+                        transform: rotate(0deg);
+                    }
+
+                    100% {
+                        transform: rotate(360deg);
+                    }
+                }
+
+                @keyframes spin-reverse {
+                    0% {
+                        transform: rotate(0deg);
+                    }
+
+                    100% {
+                        transform: rotate(-360deg);
+                    }
+                }
+
+                @keyframes pulse {
+                    0%, 100% {
+                        opacity: 0.3;
+                    }
+
+                    50% {
+                        opacity: 1;
+                    }
+                }
+            </style>
+        </div>
+    </div>
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+    <script>
+        (function (l) {
+            if (l.search[1] === '/') {
+                var decoded = l.search.slice(1).split('&').map(function (s) {
+                    return s.replace(/~and~/g, '&')
+                }).join('?');
+                window.history.replaceState(null, null,
+                    l.pathname.slice(0, -1) + decoded + l.hash
+                );
+            }
+        }(window.location))
+    </script>
+    <script src="_framework/blazor.webassembly.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="_content/BlazorScheduler/js/scripts.js"></script>
+    <script>
+        /* =========================================================
+           УТИЛИТЫ
+        ========================================================= */
+
+        // [НОВОЕ] Функция для плавной прокрутки наверх
+        window.scrollToTop = function () {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        };
+
+        // [НОВОЕ] Функция для отслеживания прокрутки (показывает/скрывает кнопку)
+        window.registerScrollListener = function (dotNetHelper) {
+            window.addEventListener('scroll', function () {
+                // Если прокрутили больше 300px, сообщаем Blazor, что пора показать кнопку
+                if (window.scrollY > 250) {
+                    dotNetHelper.invokeMethodAsync('ShowButton', true);
+                } else {
+                    dotNetHelper.invokeMethodAsync('ShowButton', false);
+                }
+            });
+        };
+
+        // Скролл вниз контейнера по id
+        window.scrollToBottom = function (elementId) {
+            var element = document.getElementById(elementId);
+            if (element) {
+                element.scrollTop = element.scrollHeight;
+            }
+        };
+
+        // Плавный скролл к элементу по id (используется после отправки формы)
+        window.scrollToElement = function (elementId) {
+            var element = document.getElementById(elementId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        };
+
+        /* =========================================================
+           ПОЛЕ ТЕЛЕФОНА
+           Форматирование (+375-XX-XXX-XX-XX) выполняется на стороне C#.
+           Эта функция только выставляет начальный префикс при инициализации,
+           чтобы пользователь сразу видел +375-.
+        ========================================================= */
+        window.applyPhoneMask = function (elementId) {
+            var input = document.getElementById(elementId);
+            if (!input) return;
+            if (!input.value) {
+                input.value = '+375-';
+            }
+        };
+
+        // Получить позицию курсора в поле
+        window.getCaretPosition = function (elementId) {
+            var input = document.getElementById(elementId);
+            return input ? input.selectionStart : 0;
+        };
+
+        // Восстановить позицию курсора после рендера Blazor
+        window.setCaretPosition = function (elementId, pos) {
+            var input = document.getElementById(elementId);
+            if (input) {
+                input.setSelectionRange(pos, pos);
+            }
+        };
+    </script>
+    <script>
+        /* =========================================================
+           СТРАНИЦА СЮЖЕТОВ
+           Управление YouTube-роликами:
+           если пользователь запускает один ролик,
+           остальные автоматически ставятся на паузу.
+        ========================================================= */
+
+        let storiesYoutubePlayers = [];
+        let youtubeApiReadyPromise = null;
+
+        window.ensureYouTubeIframeApi = function () {
+            if (window.YT && window.YT.Player) {
+                return Promise.resolve();
+            }
+
+            if (youtubeApiReadyPromise) {
+                return youtubeApiReadyPromise;
+            }
+
+            youtubeApiReadyPromise = new Promise(function (resolve) {
+                const previousCallback = window.onYouTubeIframeAPIReady;
+
+                window.onYouTubeIframeAPIReady = function () {
+                    if (typeof previousCallback === 'function') {
+                        previousCallback();
+                    }
+                    resolve();
+                };
+
+                const existingScript = document.querySelector('script[src="https://www.youtube.com/iframe_api"]');
+
+                if (!existingScript) {
+                    const script = document.createElement('script');
+                    script.src = 'https://www.youtube.com/iframe_api';
+                    const firstScript = document.getElementsByTagName('script')[0];
+                    firstScript.parentNode.insertBefore(script, firstScript);
+                }
+            });
+
+            return youtubeApiReadyPromise;
+        };
+
+        window.initStoriesYouTubePlayers = async function (selector) {
+            await window.ensureYouTubeIframeApi();
+
+            storiesYoutubePlayers = [];
+
+            const iframes = document.querySelectorAll(selector);
+
+            iframes.forEach(function (iframe, index) {
+                if (!iframe.id) {
+                    iframe.id = 'stories-youtube-' + index;
+                }
+
+                const player = new YT.Player(iframe.id, {
+                    events: {
+                        onStateChange: function (event) {
+                            // YT.PlayerState.PLAYING = ролик начал проигрываться
+                            if (event.data === YT.PlayerState.PLAYING) {
+                                storiesYoutubePlayers.forEach(function (otherPlayer) {
+                                    if (otherPlayer !== event.target && typeof otherPlayer.pauseVideo === 'function') {
+                                        try {
+                                            otherPlayer.pauseVideo();
+                                        } catch (e) {
+                                            console.warn('Не удалось поставить другой YouTube-плеер на паузу', e);
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    }
+                });
+
+                storiesYoutubePlayers.push(player);
+            });
+        };
+
+        window.destroyStoriesYouTubePlayers = function () {
+            storiesYoutubePlayers.forEach(function (player) {
+                try {
+                    if (player && typeof player.destroy === 'function') {
+                        player.destroy();
+                    }
+                } catch (e) {
+                    console.warn('Не удалось уничтожить YouTube-плеер', e);
+                }
+            });
+
+            storiesYoutubePlayers = [];
+        };
+    </script>
+
+</body>
+</html>

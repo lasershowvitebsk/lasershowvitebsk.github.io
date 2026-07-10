@@ -1,0 +1,207 @@
+﻿.scheduler {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    outline: 0;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+
+    --background-color: white;
+    background-color: var(--background-color);
+}
+
+.scheduler > .header > .actions {
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    background-color: white;
+}
+.scheduler > .header > .actions > .navigation > .selected-month {
+    width: 160px;
+    display: inline-block;
+    text-align: center;
+    font-size: 1.25rem;
+    vertical-align: middle;
+}
+.scheduler > .header > .actions .btn {
+    background-color: #ddd;
+    border: none;
+    color: black;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+.scheduler > .header > .actions .btn:focus {
+    outline: none;
+}
+
+.scheduler > .header > .actions .icon-btn {
+    background: initial;
+    border-radius: 50%;
+}
+.scheduler > .header > .actions .icon-btn:hover {
+    background-color: #ddd;
+}
+.scheduler > .header > .actions .icon-btn > svg {
+    width: 1em;
+    height: 1em;
+    fill: currentColor;
+    font-size: 1.5rem;
+    margin: -6px;
+}
+
+.scheduler > .month {
+    display: flex;
+    flex-direction: column;
+}
+.scheduler > .month > .week {
+    position: relative;
+}
+.scheduler > .month > div:not(:last-of-type) {
+    border-bottom: 1px solid #eee;
+}
+.scheduler > .month > .week > .days {
+    display: flex;
+    justify-content: space-around;
+    height: max(8.313rem, calc(1.5rem + 5px + 8px + var(--maxAppointments) * 1.5rem));
+}
+
+.scheduler > .month > .week.header {
+    display: flex;
+    justify-content: space-around;
+    border-bottom: 1px solid #eee;
+}
+
+.scheduler > .month > .week.header > .day-of-month {
+    background-color: white;
+    text-align: center;
+    font-weight: bold;
+    flex: 1;
+}
+.scheduler > .month > .week.header > .day-of-month > .short-dayname {
+    display: none;
+}
+.scheduler > .month > .week.header > div:not(:last-of-type) {
+    border-right: 1px solid #eee;
+}
+
+.scheduler > .month > .week > .days > .day {
+    background-color: white;
+    flex: 1;
+    text-align: center;
+}
+
+.scheduler > .month > .week > .days > div:not(:last-of-type) {
+    border-right: 1px solid #eee;
+}
+
+.scheduler > .month > .week > .days > .day > span {
+    margin-top: 5px;
+    font-size: .9rem;
+    font-size: .75rem;
+    display: inline-block;
+
+    background-color: inherit;
+    text-align: center;
+    border-radius: 50%;
+    --size: 1.5rem;
+    min-width: var(--size);
+    height: var(--size);
+    line-height: var(--size);
+}
+
+.scheduler > .month > .week > .days > .day.diff-month {
+    background-color: #f7f7f7;
+    color: #ababab;
+}
+
+.scheduler > .month > .week > .appointments > .appointment {
+    position: absolute;
+    left: calc(var(--start) / 7 * 100%);
+    top: max(10px, calc(15px + (var(--order) * 1.5rem)));
+    border-radius: 2px;
+    margin-left: 2px;
+    width: calc((var(--end) - var(--start) + 1) / 7 * 100% - 4px);
+    padding-left: 4px;
+    font-size: .95rem;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.scheduler > .month > .week > .appointments > .appointment.new-appointment {
+    top: 30px;
+    z-index: 1;
+    box-shadow: 3px 6px 6px rgb(0 0 0 / 50%);
+}
+.scheduler > .month > .week > .appointments > .appointment-timed {
+    background-color: var(--background-color);
+    width: calc(100% / 7 - 4px);
+}
+.scheduler > .month > .week > .appointments > .appointment-timed.new-appointment {
+    border: 1px solid #eee;
+}
+.scheduler > .month > .week > .appointments > .appointment > .dot {
+    --size: 7px;
+    display: inline-block;
+    width: var(--size);
+    height: var(--size);
+    line-height: 1rem;
+    vertical-align: middle;
+    border-radius: 50%;
+    background-color: red;
+}
+
+.scheduler-loader,
+.scheduler-loader:after {
+    border-radius: 50%;
+    width: var(--size);
+    height: var(--size);
+}
+
+.scheduler-loader {
+    border-top: calc(var(--size)/10) solid var(--color1);
+    border-right: calc(var(--size)/10) solid var(--color2);
+    border-bottom: calc(var(--size)/10) solid var(--color2);
+    border-left: calc(var(--size)/10) solid var(--color2);
+    -webkit-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-animation: scheduler-loader-anim 1.1s infinite linear;
+    animation: scheduler-loader-anim 1.1s infinite linear;
+}
+
+@-webkit-keyframes scheduler-loader-anim {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+
+    100% {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes scheduler-loader-anim {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+
+    100% {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+
+
+@media only screen and (max-width: 550px) {
+    .scheduler > .month > .week.header > .day-of-month > .full-dayname {
+        display: none;
+    }
+    .scheduler > .month > .week.header > .day-of-month > .short-dayname {
+        display: initial;
+    }
+}
