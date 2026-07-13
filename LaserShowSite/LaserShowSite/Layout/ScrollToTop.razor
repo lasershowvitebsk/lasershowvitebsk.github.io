@@ -1,0 +1,41 @@
+﻿@inject IJSRuntime JS
+@implements IDisposable
+
+<button class="scroll-to-top @(isVisible ? "show" : "")" @onclick="ScrollToTopAsync" aria-label="Наверх">
+    <i class="bi bi-arrow-up-short"></i> <!-- Стрелочка (использует иконки Bootstrap) -->
+    <!-- Если у вас нет Bootstrap-иконок, можно использовать обычную стрелочку: ↑ -->
+</button>
+
+@code {
+    private bool isVisible = false;
+    private DotNetObjectReference<ScrollToTop>? listerRef;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            listerRef = DotNetObjectReference.Create(this);
+            await JS.InvokeVoidAsync("registerScrollListener", listerRef);
+        }
+    }
+
+    [JSInvokable]
+    public void ShowButton(bool show)
+    {
+        if (isVisible != show)
+        {
+            isVisible = show;
+            StateHasChanged(); // Перерисовываем компонент для плавного CSS-эффекта
+        }
+    }
+
+    private async Task ScrollToTopAsync()
+    {
+        await JS.InvokeVoidAsync("scrollToTop");
+    }
+
+    public void Dispose()
+    {
+        listerRef?.Dispose();
+    }
+}

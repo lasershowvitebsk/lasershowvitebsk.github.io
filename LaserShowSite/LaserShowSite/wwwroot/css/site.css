@@ -1,0 +1,1583 @@
+﻿/* =========================================================================
+   СОДЕРЖАНИЕ ФАЙЛА СТИЛЕЙ:
+   1.  Глобальные переменные, сброс отступов и общие настройки
+   2.  Эффекты и заголовки (Неон, page-title)
+   3.  Первый экран / Hero (Слайд-шоу на чистом CSS)
+   4.  Главная страница и контейнеры медиа (Видео, Галерея)
+   5.  Карточки услуг (service-card, service-price)
+   6.  Видео-плееры (YouTube/Vimeo)
+   7.  Галерея изображений
+   8.  Чат (Отдельная страница)
+   9.  Календарь записи (Scheduler)
+   10. Модальные окна
+   11. Плавающий круглый виджет чата (Справа внизу)
+   12. Хедер / Шапка сайта (Логотип, переключатель языков)
+   13. Навигационное меню (Ссылки)
+   14. FAQ (Аккордеон)
+   15. Сюжеты и категории
+   16. Страница контактов (Кнопки мессенджеров)
+   17. Оформление форм и валидация
+   18. Страница "Как мы работаем"
+   19. Базовые стили символа белорусского рубля (BYN)
+   20. Базовые стили кнопки плавного возврата вверх (Scroll to Top)
+   21. ДЕСКТОПНАЯ АДАПТИВНОСТЬ (Экран ≥ 992px)
+   22. ПЛАНШЕТНАЯ АДАПТИВНОСТЬ (Экран от 576px до 991px)
+   23. МОБИЛЬНАЯ АДАПТИВНОСТЬ (Экран ≤ 576px)
+========================================================================= */
+
+/* =========================================================================
+   1. ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ И НАСТРОЙКА ЦВЕТОВ
+========================================================================= */
+:root {
+    /* Единый боковой и верхний отступ сайта от краев экрана */
+    --site-edge-gutter: 2px;
+    /* Смещение переключателя языков по вертикали */
+    --language-drop: 8px;
+    /* Настройки символа BYN для веб-версии */
+    --byn-calc-height: 0.75em;
+    --byn-calc-top: 1.0px;
+    --byn-services-height: 0.75em;
+    --byn-services-top: -2.0px;
+    /* Цветовая палитра */
+    --color-bg: #0a0a0f;
+    --color-panel: #1a1a2e;
+    --color-panel-dark: #0d0d1a;
+    --color-panel-soft: #121224;
+    --color-card: rgba(255, 255, 255, 0.04);
+    /* Цвета текста */
+    --color-text: #e0e0e0;
+    --color-text-soft: #b0b0cb;
+    --color-white: #ffffff;
+    /* Акцентные цвета */
+    --color-primary: #0d6efd;
+    --color-neon: #0ff;
+    /* Границы и тени */
+    --border-soft: 1px solid rgba(255, 255, 255, 0.08);
+    --border-dark: 1px solid #333;
+    --shadow-neon-soft: 0 0 30px rgba(0, 255, 255, 0.2);
+    --shadow-blue-soft: 0 4px 15px rgba(13, 110, 253, 0.4);
+}
+
+/* Сброс отступов браузера по умолчанию */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    overflow-x: clip;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+@supports not (overflow-x: clip) {
+    html,
+    body {
+        overflow-x: hidden;
+    }
+}
+
+body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+
+/* =========================================================================
+   2. ОБЩИЕ СТИЛИ И ЭФФЕКТЫ (Заголовки, Неон)
+========================================================================= */
+.neon-title {
+    color: var(--color-neon);
+    text-shadow: 0 0 10px var(--color-neon), 0 0 20px var(--color-neon);
+}
+
+.page-title {
+    margin-top: 2rem !important;
+    margin-bottom: 1.75rem !important;
+    font-size: 2rem;
+    line-height: 1.2;
+    font-weight: 700;
+}
+
+
+/* =========================================================================
+   3. ПЕРВЫЙ ЭКРАН / HERO (Слайд-шоу на чистом CSS)
+========================================================================= */
+.hero-section {
+    height: 80vh;
+    margin: var(--site-edge-gutter) !important;
+    border-radius: 8px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    text-align: center;
+    padding-bottom: 10vh;
+    position: relative;
+    overflow: hidden;
+    background: #000;
+}
+
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        background: linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.75));
+    }
+
+    .hero-section::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        background-position: center;
+        background-size: cover;
+        background-repeat: no-repeat;
+        animation: hero-slideshow 18s infinite;
+    }
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2.5rem;
+    max-width: 1200px;
+    padding: 0;
+}
+
+    .hero-content h1 {
+        font-size: clamp(2.5rem, 4.5vw, 4rem);
+        line-height: 1.1;
+        margin: 0;
+    }
+
+    .hero-content p {
+        font-size: clamp(1.0rem, 1.8vw, 1.2rem);
+        line-height: 1.65;
+        color: rgba(224, 224, 224, 0.9);
+        margin: 0;
+        text-align: center;
+    }
+
+    .hero-content .btn {
+        padding: 0.75rem 2.5rem;
+        font-size: 1.1rem;
+        margin-top: 0.75rem;
+    }
+
+@keyframes hero-slideshow {
+    0%, 28% {
+        background-image: url('../images/laser-bg1.webp');
+        opacity: 1;
+    }
+
+    33% {
+        opacity: 0.3;
+    }
+
+    38%, 61% {
+        background-image: url('../images/laser-bg2.webp');
+        opacity: 1;
+    }
+
+    66% {
+        opacity: 0.3;
+    }
+
+    71%, 94% {
+        background-image: url('../images/laser-bg3.webp');
+        opacity: 1;
+    }
+
+    100% {
+        background-image: url('../images/laser-bg1.webp');
+        opacity: 1;
+    }
+}
+
+
+/* =========================================================================
+   4. ГЛАВНАЯ СТРАНИЦА И КОНТЕЙНЕРЫ МЕДИА (Видео, Галерея)
+========================================================================= */
+.home-section {
+    padding-top: 3.5rem;
+    padding-bottom: 3.5rem;
+}
+
+.home-features-section {
+    padding-top: 3.75rem;
+    padding-bottom: 2.75rem;
+}
+
+.home-feature {
+    max-width: 360px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.home-feature-icon {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 1rem auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #0ff;
+    font-size: 3rem;
+    line-height: 1;
+    text-shadow: 0 0 8px rgba(13, 110, 253, 0.8), 0 0 18px rgba(0, 255, 255, 0.25);
+}
+
+.home-feature-title {
+    margin-bottom: 0.75rem;
+    color: #f5f7ff;
+    font-size: 1.45rem;
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+.home-feature-text {
+    max-width: 340px;
+    margin: 0 auto;
+    color: var(--color-white);
+    font-size: 1.02rem;
+    line-height: 1.55;
+}
+
+.home-section-title {
+    max-width: 680px;
+    margin: 0 auto 1.75rem auto;
+    color: #f5f7ff;
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.2;
+    text-align: center;
+}
+
+.home-media-section {
+    padding-top: 2.75rem;
+    padding-bottom: 3.25rem;
+}
+
+.home-video-box {
+    width: calc(100% - (var(--site-edge-gutter) * 2)) !important;
+    max-width: 1400px !important;
+    margin: 0 auto !important;
+}
+
+.home-gallery-box {
+    width: calc(100% - (var(--site-edge-gutter) * 2)) !important;
+    max-width: 1400px !important;
+    margin: 0 auto !important;
+}
+
+.home-media-section .gallery-img {
+    border-radius: 8px;
+}
+
+
+/* =========================================================================
+   5. КАРТОЧКИ УСЛУГ
+========================================================================= */
+.service-card {
+    background: var(--color-card);
+    backdrop-filter: blur(10px);
+    border: var(--border-soft);
+    border-radius: 15px;
+    transition: all 0.3s ease;
+}
+
+    .service-card:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--shadow-neon-soft);
+        border-color: rgba(0, 255, 255, 0.4);
+    }
+
+    .service-card .card-text {
+        color: var(--color-text-soft) !important;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        text-align: center;
+    }
+
+.service-price {
+    display: inline-block;
+    color: var(--color-neon) !important;
+    font-size: 1.3rem;
+    font-weight: 700;
+    padding: 6px 20px;
+    border-bottom: 2px solid rgba(0, 255, 255, 0.3);
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    letter-spacing: 0.5px;
+}
+
+
+/* =========================================================================
+   6. ВИДЕО-ПЛЕЕРЫ (YouTube/Vimeo)
+========================================================================= */
+.video-wrapper {
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+}
+
+    .video-wrapper iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+
+/* =========================================================================
+   7. ГАЛЕРЕЯ (Изображения)
+========================================================================= */
+.gallery-img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s;
+    cursor: pointer;
+}
+
+    .gallery-img:hover {
+        transform: scale(1.05);
+    }
+
+
+/* =========================================================================
+   8. ЧАТ (Отдельная страница)
+========================================================================= */
+.chat-container {
+    max-width: 600px;
+    margin: 0 auto;
+    background: var(--color-panel);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: var(--shadow-neon-soft);
+}
+
+.chat-messages {
+    height: 400px;
+    overflow-y: auto;
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.message {
+    max-width: 80%;
+    padding: 10px 15px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+    word-wrap: break-word;
+}
+
+    .message.user {
+        align-self: flex-end;
+        background: var(--color-primary);
+        color: var(--color-white);
+    }
+
+    .message.bot {
+        align-self: flex-start;
+        background: #2d2d44;
+        color: var(--color-text);
+    }
+
+.chat-input {
+    display: flex;
+    gap: 10px;
+}
+
+    .chat-input input {
+        flex: 1;
+        border-radius: 30px;
+        padding: 10px 20px;
+        border: none;
+        background: #2d2d44;
+        color: var(--color-white);
+    }
+
+    .chat-input button {
+        border-radius: 30px;
+        padding: 10px 25px;
+    }
+
+
+/* =========================================================================
+   9. КАЛЕНДАРЬ ЗАПИСИ (Scheduler)
+========================================================================= */
+.scheduler .fc .fc-toolbar-title {
+    color: var(--color-neon);
+}
+
+.scheduler .fc .fc-button-primary {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+.scheduler .fc .fc-daygrid-day {
+    background: var(--color-panel-dark);
+}
+
+.scheduler .fc .fc-daygrid-day-number {
+    color: #ccc;
+}
+
+.scheduler .fc .fc-col-header-cell {
+    background: #2d2d44;
+    color: var(--color-white);
+}
+
+.scheduler .fc .fc-event {
+    border-radius: 8px;
+    border: none;
+    font-weight: bold;
+}
+
+
+/* =========================================================================
+   10. МОДАЛЬНЫЕ ОКНА
+========================================================================= */
+.modal-content {
+    background-color: var(--color-panel) !important;
+    color: var(--color-white);
+}
+
+
+/* =========================================================================
+   11. ПЛАВАЮЩИЙ КРУГЛЫЙ ВИДЖЕТ ЧАТА (Справа внизу)
+========================================================================= */
+.chat-widget {
+    position: fixed;
+    right: calc(var(--site-edge-gutter) * 4);
+    bottom: calc(var(--site-edge-gutter) * 4);
+    z-index: 9999;
+}
+
+.chat-toggle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    color: var(--color-white);
+    border: none;
+    font-size: 28px;
+    box-shadow: var(--shadow-blue-soft);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: visible;
+    isolation: isolate;
+    animation: chat-attention 6s ease-in-out infinite;
+}
+
+    .chat-toggle::before,
+    .chat-toggle::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        border: 2px solid rgba(13, 110, 253, 0.55);
+        box-shadow: 0 0 18px rgba(13, 110, 253, 0.45);
+        z-index: -1;
+        opacity: 0;
+        pointer-events: none;
+        animation: chat-wave 2.8s ease-out infinite;
+    }
+
+    .chat-toggle::after {
+        animation-delay: 1.4s;
+    }
+
+    .chat-toggle:hover {
+        animation: none;
+        transform: scale(1.05);
+        box-shadow: 0 6px 20px rgba(13, 110, 253, 0.6);
+    }
+
+@keyframes chat-wave {
+    0% {
+        transform: scale(1);
+        opacity: 0.65;
+    }
+
+    70% {
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1.65);
+        opacity: 0;
+    }
+}
+
+@keyframes chat-attention {
+    0%, 78%, 100% {
+        transform: translateX(0) rotate(0);
+    }
+
+    82% {
+        transform: translateX(-2px) rotate(-5deg);
+    }
+
+    86% {
+        transform: translateX(2px) rotate(5deg);
+    }
+
+    90% {
+        transform: translateX(-1px) rotate(-3deg);
+    }
+
+    94% {
+        transform: translateX(1px) rotate(3deg);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .chat-toggle,
+    .chat-toggle::before,
+    .chat-toggle::after {
+        animation: none !important;
+    }
+}
+
+.chat-window {
+    position: absolute;
+    right: calc(var(--site-edge-gutter) * 4);
+    bottom: 80px;
+    width: 350px;
+    max-height: 500px;
+    background: var(--color-panel);
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: var(--border-dark);
+}
+
+.chat-header {
+    padding: 12px 16px;
+    background: var(--color-primary);
+    color: var(--color-white);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+}
+
+.chat-close {
+    background: transparent;
+    border: none;
+    color: var(--color-white);
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0 4px;
+}
+
+.chat-widget .chat-messages {
+    flex: 1;
+    height: auto;
+    min-height: 0;
+    max-height: 350px;
+    padding: 12px;
+    margin-bottom: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+    .chat-widget .chat-messages .message {
+        max-width: 85%;
+        padding: 8px 14px;
+        border-radius: 16px;
+        font-size: 0.9rem;
+        word-wrap: break-word;
+        margin-bottom: 0;
+    }
+
+        .chat-widget .chat-messages .message.user {
+            align-self: flex-end;
+            background: var(--color-primary);
+            color: var(--color-white);
+            border-bottom-right-radius: 4px;
+        }
+
+        .chat-widget .chat-messages .message.bot {
+            align-self: flex-start;
+            background: #2d2d44;
+            color: var(--color-text);
+            border-bottom-left-radius: 4px;
+        }
+
+.chat-widget .chat-input {
+    padding: 8px 12px;
+    display: flex;
+    gap: 8px;
+    border-top: var(--border-dark);
+    background: var(--color-panel-dark);
+}
+
+    .chat-widget .chat-input input {
+        flex: 1;
+        min-width: 0;
+        border-radius: 20px;
+        padding: 6px 14px;
+        border: none;
+        background: #2d2d44;
+        color: var(--color-white);
+    }
+
+        .chat-widget .chat-input input::placeholder {
+            color: #888;
+        }
+
+    .chat-widget .chat-input button {
+        flex-shrink: 0;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+
+/* =========================================================================
+   12. ХЕДЕР / ШАПКА САЙТА
+========================================================================= */
+.main-header {
+    background: var(--color-panel);
+    border-bottom: var(--border-dark);
+}
+
+.header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px var(--site-edge-gutter);
+}
+
+.brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--color-white);
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.language-wrapper {
+    position: relative;
+    top: var(--language-drop);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    margin-right: 10px;
+}
+
+.lang-divider {
+    color: #555;
+    font-size: 1.2rem;
+}
+
+.lang-icon {
+    color: #aaa;
+    font-size: 1.1rem;
+}
+
+.lang-switcher {
+    display: flex;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 4px 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.lang-btn {
+    background: transparent;
+    border: none;
+    color: #888;
+    padding: 4px 14px;
+    border-radius: 16px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+    .lang-btn.active {
+        background: var(--color-primary);
+        color: var(--color-white);
+        box-shadow: 0 0 12px rgba(13, 110, 253, 0.3);
+    }
+
+    .lang-btn:hover:not(.active) {
+        color: var(--color-white);
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+.header-bottom {
+    padding: 0 var(--site-edge-gutter) 8px var(--site-edge-gutter);
+}
+
+.navbar {
+    width: 100%;
+    padding: 0;
+}
+
+.navbar-toggler {
+    border-color: rgba(255, 255, 255, 0.1);
+    padding: 0.25rem 0.5rem;
+    margin-right: 0;
+}
+
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255,255,255,0.7)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+
+/* =========================================================================
+   13. НАВИГАЦИОННОЕ МЕНЮ (Ссылки)
+========================================================================= */
+.navbar-nav .nav-link {
+    color: #ccc !important;
+    font-size: 1.2rem;
+    padding: 0.5rem 1rem;
+    transition: color 0.25s ease-in-out;
+    position: relative;
+}
+
+    .navbar-nav .nav-link:hover {
+        color: var(--color-white) !important;
+    }
+
+    .navbar-nav .nav-link::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 1rem;
+        right: 1rem;
+        height: 3px;
+        background-color: var(--color-neon);
+        transform: scaleX(0);
+        transition: transform 0.25s ease-in-out;
+        transform-origin: center;
+    }
+
+    .navbar-nav .nav-link:hover::after {
+        transform: scaleX(0.5);
+    }
+
+    .navbar-nav .nav-link.active {
+        color: var(--color-neon) !important;
+        background: transparent !important;
+        border-radius: 0;
+    }
+
+        .navbar-nav .nav-link.active::after {
+            transform: scaleX(1);
+        }
+
+
+/* =========================================================================
+   14. FAQ (Аккордеон)
+========================================================================= */
+.custom-faq-accordion .accordion-item {
+    background-color: var(--color-panel-soft) !important;
+    border: var(--border-soft) !important;
+    border-radius: 12px !important;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+    .custom-faq-accordion .accordion-item:hover {
+        border-color: rgba(0, 255, 255, 0.2) !important;
+        box-shadow: 0 0 15px rgba(0, 255, 255, 0.05);
+    }
+
+.custom-faq-accordion .accordion-button {
+    background-color: var(--color-panel-soft) !important;
+    color: var(--color-text) !important;
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding: 18px 24px;
+    border: none !important;
+    box-shadow: none !important;
+    transition: all 0.25s ease;
+}
+
+    .custom-faq-accordion .accordion-button:not(.collapsed) {
+        background-color: var(--color-panel) !important;
+        color: var(--color-neon) !important;
+        text-shadow: 0 0 8px rgba(0, 255, 255, 0.3);
+    }
+
+    .custom-faq-accordion .accordion-button::after {
+        filter: invert(1) grayscale(1);
+        transition: transform 0.25s ease;
+    }
+
+    .custom-faq-accordion .accordion-button:not(.collapsed)::after {
+        filter: invert(72%) sepia(91%) saturate(1914%) hue-rotate(134deg) brightness(105%) contrast(105%);
+    }
+
+.custom-faq-accordion .accordion-body {
+    background-color: var(--color-panel) !important;
+    color: var(--color-text-soft) !important;
+    font-size: 0.98rem;
+    line-height: 1.6;
+    padding: 20px 24px 24px 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+
+/* =========================================================================
+   15. СЮЖЕТЫ И КАТЕГОРИИ
+========================================================================= */
+.stories-page .category-header-wrapper {
+    margin-top: 3rem !important;
+    margin-bottom: 1.5rem !important;
+}
+
+    .stories-page .category-header-wrapper:first-child {
+        margin-top: 1.75rem !important;
+    }
+
+.category-header-wrapper {
+    border-bottom: 1px solid rgba(0, 255, 255, 0.15);
+    padding-bottom: 10px;
+}
+
+.category-title {
+    color: var(--color-text);
+    font-size: 1.6rem;
+    font-weight: 600;
+    position: relative;
+    display: inline-block;
+}
+
+    .category-title::before {
+        content: '';
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        background-color: var(--color-neon);
+        border-radius: 50%;
+        margin-right: 12px;
+        vertical-align: middle;
+        box-shadow: 0 0 10px var(--color-neon), 0 0 20px var(--color-neon);
+    }
+
+.video-card-title {
+    color: var(--color-text-soft) !important;
+    font-size: 1rem;
+    font-weight: 500;
+    margin: 0;
+}
+
+
+/* =========================================================================
+   16. СТРАНИЦА КОНТАКТОВ
+========================================================================= */
+.contact-card {
+    background: var(--color-card) !important;
+    backdrop-filter: blur(10px);
+    border: var(--border-soft) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+    .contact-card p.text-muted {
+        color: var(--color-text-soft) !important;
+    }
+
+.contacts-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.contact-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 14px 28px;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: none;
+    color: var(--color-white) !important;
+    width: 100%;
+    max-width: 360px;
+}
+
+    .contact-btn:hover {
+        transform: translateY(-4px);
+    }
+
+.btn-phone {
+    background: var(--color-primary);
+    box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
+}
+
+    .btn-phone:hover {
+        box-shadow: 0 8px 25px rgba(13, 110, 253, 0.5);
+    }
+
+.btn-instagram {
+    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    box-shadow: 0 4px 15px rgba(220, 39, 67, 0.3);
+}
+
+    .btn-instagram:hover {
+        box-shadow: 0 8px 25px rgba(220, 39, 67, 0.5);
+    }
+
+.btn-viber {
+    background: #7360f2;
+    box-shadow: 0 4px 15px rgba(115, 96, 242, 0.3);
+}
+
+    .btn-viber:hover {
+        box-shadow: 0 8px 25px rgba(115, 96, 242, 0.5);
+    }
+
+.btn-whatsapp {
+    background: #25D366;
+    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+}
+
+    .btn-whatsapp:hover {
+        box-shadow: 0 8px 25px rgba(37, 211, 102, 0.5);
+    }
+
+.contact-card .border-top {
+    border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+    .contact-card .border-top.text-muted {
+        color: #a0a0b8 !important;
+        font-weight: 500;
+    }
+
+    .contact-card .border-top i {
+        color: var(--color-neon) !important;
+        text-shadow: 0 0 5px rgba(0, 255, 255, 0.6);
+        margin-right: 8px;
+    }
+
+
+/* =========================================================================
+   17. ОФОРМЛЕНИЕ ФОРМ
+========================================================================= */
+.form-control::placeholder {
+    color: rgba(115, 115, 115, 0.5) !important;
+    opacity: 1;
+}
+
+.validation-message {
+    display: block !important;
+    color: #ff4d4d !important;
+    font-size: 0.85rem;
+    margin-top: 5px;
+    text-align: left;
+}
+
+.required-label::after {
+    content: " *";
+    color: #ff4d4d;
+    font-weight: 700;
+    text-shadow: 0 0 6px rgba(255, 77, 77, 0.6);
+}
+
+.btn-submit:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    box-shadow: none !important;
+    transform: none !important;
+}
+
+
+/* =========================================================================
+   18. СТРАНИЦА "КАК МЫ РАБОТАЕМ"
+========================================================================= */
+.work-steps-page {
+    padding-bottom: 2rem;
+}
+
+.work-steps-lead {
+    max-width: 820px;
+    margin: 0 auto 2.5rem auto;
+    color: var(--color-text-soft);
+    font-size: 1.1rem;
+    line-height: 1.7;
+}
+
+.work-step-card {
+    background: var(--color-card);
+    border: var(--border-soft);
+    border-radius: 16px;
+    padding: 24px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+    .work-step-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: linear-gradient(90deg, transparent, var(--color-neon), transparent);
+        opacity: 0.5;
+    }
+
+    .work-step-card:hover {
+        transform: translateY(-6px);
+        border-color: rgba(0, 255, 255, 0.35);
+        box-shadow: 0 0 28px rgba(0, 255, 255, 0.12);
+    }
+
+.work-step-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+}
+
+.work-step-number {
+    color: rgba(0, 255, 255, 0.85);
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.45);
+}
+
+.work-step-icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-white);
+    font-size: 1.7rem;
+    border-radius: 14px;
+    background: rgba(13, 110, 253, 0.18);
+    box-shadow: 0 0 16px rgba(13, 110, 253, 0.28);
+}
+
+.work-step-title {
+    margin-bottom: 12px;
+    color: var(--color-white);
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.work-step-text {
+    margin-bottom: 0;
+    color: var(--color-text-soft);
+    font-size: 0.98rem;
+    line-height: 1.65;
+}
+
+.work-info-card {
+    background: var(--color-card);
+    border: var(--border-soft);
+    border-radius: 16px;
+    padding: 26px;
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.22);
+}
+
+.work-info-title {
+    margin-bottom: 18px;
+    color: var(--color-neon);
+    font-size: 1.35rem;
+    font-weight: 700;
+    text-shadow: 0 0 8px rgba(0, 255, 255, 0.35);
+}
+
+.work-info-list {
+    margin: 0;
+    padding-left: 1.2rem;
+    color: #d7d7e8;
+}
+
+    .work-info-list li {
+        margin-bottom: 10px;
+        line-height: 1.55;
+    }
+
+        .work-info-list li:last-child {
+            margin-bottom: 0;
+        }
+
+.work-info-text {
+    margin-bottom: 0;
+    color: #d7d7e8;
+    font-size: 1rem;
+    line-height: 1.7;
+}
+
+.work-steps-cta {
+    max-width: 820px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 34px 24px;
+    background: rgba(13, 110, 253, 0.08);
+    border: 1px solid rgba(0, 255, 255, 0.12);
+    border-radius: 18px;
+}
+
+    .work-steps-cta h3 {
+        color: var(--color-white);
+        font-size: 1.55rem;
+        font-weight: 700;
+        margin-bottom: 12px;
+    }
+
+    .work-steps-cta p {
+        max-width: 640px;
+        margin: 0 auto;
+        color: var(--color-text-soft);
+        font-size: 1.03rem;
+        line-height: 1.6;
+    }
+
+
+/* =========================================================================
+   19. СТИЛИ ДЛЯ ОРИГИНАЛЬНОЙ КАРТИНКИ БЕЛОРУССКОГО РУБЛЯ (BYN)
+========================================================================= */
+
+/* Base setup for BYN */
+.byn-icon-calc {
+    height: var(--byn-calc-height);
+    width: auto;
+    display: inline-block;
+    margin-left: 0.25em;
+    vertical-align: middle;
+    position: relative;
+    top: var(--byn-calc-top);
+    transition: filter 0.3s ease;
+}
+
+/* 1. Иконка рубля в тексте доставки (под инпутом). 
+   Красим её в яркий бирюзовый/голубой цвет (#0ff / #00e5ff), чтобы она светилась и отлично читалась на темном фоне. */
+.text-info .byn-icon-calc {
+    filter: invert(72%) sepia(91%) saturate(1914%) hue-rotate(134deg) brightness(105%) contrast(105%) !important;
+    height: 0.85em !important; /* Увеличиваем высоту (по умолчанию там 0.75em из-за родительского класса) */
+    top: 0.5px !important; /* Слегка приподнимаем вверх для идеального выравнивания по центру текста */
+}
+
+/* 2. Иконка рубля внутри светлого блока alert-info (Ориентировочная стоимость).
+   Красим её в глубокий темно-синий/бирюзовый цвет, чтобы она идеально совпадала по цвету с текстом "Ориентировочная стоимость". */
+.alert-info .byn-icon-calc {
+    filter: invert(30%) sepia(47%) saturate(1437%) hue-rotate(158deg) brightness(91%) contrast(92%) !important;
+}
+
+/* BYN на странице услуг (с неоновым свечением) */
+.byn-icon-services {
+    height: var(--byn-services-height);
+    width: auto;
+    display: inline-block;
+    margin-left: 0.25em;
+    vertical-align: middle;
+    position: relative;
+    top: var(--byn-services-top);
+    filter: invert(72%) sepia(91%) saturate(1914%) hue-rotate(134deg) brightness(105%) contrast(105%) drop-shadow(0 0 5px rgba(0, 255, 255, 0.6)) !important;
+}
+
+
+/* =========================================================================
+   20. КНОПКА ВОЗВРАТА НАВЕРХ (SCROLL TO TOP)
+========================================================================= */
+.scroll-to-top {
+    position: fixed;
+    left: calc(var(--site-edge-gutter) * 4);
+    bottom: calc(var(--site-edge-gutter) * 4);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: rgba(26, 26, 46, 0.8);
+    border: 1px solid var(--color-neon);
+    color: var(--color-neon);
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px) scale(0.8);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.15);
+}
+
+    .scroll-to-top.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0) scale(1);
+    }
+
+@media (hover: hover) {
+    .scroll-to-top:hover {
+        background-color: var(--color-panel);
+        color: #fff;
+        border-color: #fff;
+        box-shadow: var(--shadow-neon-soft);
+        transform: translateY(-3px) scale(1.05);
+    }
+}
+
+.scroll-to-top:active {
+    background-color: var(--color-panel);
+    color: #fff;
+    border-color: #fff;
+    box-shadow: var(--shadow-neon-soft);
+    transform: scale(0.95);
+    transition: transform 0.1s ease;
+}
+
+.scroll-to-top::before {
+    content: '↑';
+    font-weight: bold;
+    line-height: 1;
+}
+
+
+/* =========================================================================
+   21. ДЕСКТОПНАЯ АДАПТИВНОСТЬ (Экран ≥ 992px)
+========================================================================= */
+@media (min-width: 992px) {
+    .main-header .navbar-collapse {
+        justify-content: flex-end;
+    }
+
+    .main-header .navbar-nav {
+        margin-left: auto;
+        margin-right: 0;
+    }
+
+        .main-header .navbar-nav .nav-item:last-child .nav-link {
+            padding-right: 0;
+        }
+
+            .main-header .navbar-nav .nav-item:last-child .nav-link::after {
+                right: 0;
+            }
+
+    .home-video-box,
+    .home-gallery-box {
+        max-width: 1400px !important;
+    }
+
+    .hero-content h1,
+    .hero-content p {
+        white-space: nowrap;
+    }
+}
+
+
+/* =========================================================================
+   22. ПЛАНШЕТНАЯ АДАПТИВНОСТЬ (Экран от 576px до 991px)
+========================================================================= */
+@media (max-width: 991.98px) {
+    .header-top {
+        padding: 12px var(--site-edge-gutter) 8px var(--site-edge-gutter);
+    }
+
+    .header-bottom {
+        display: flex;
+        justify-content: flex-end;
+        padding: 0 var(--site-edge-gutter) 12px var(--site-edge-gutter);
+    }
+
+    .page-title {
+        margin-top: 1.75rem !important;
+        margin-bottom: 1.5rem !important;
+        font-size: 1.9rem;
+        line-height: 1.2;
+        padding: 0 12px;
+    }
+
+    .navbar {
+        width: 100%;
+    }
+
+    .navbar-toggler {
+        margin-left: 0;
+        margin-right: auto;
+        margin-top: 4px;
+    }
+
+    .navbar-collapse {
+        width: 100%;
+        background: var(--color-panel);
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 12px;
+    }
+
+    .navbar-nav {
+        width: 100%;
+        text-align: center;
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+        .navbar-nav .nav-item {
+            width: 100%;
+            margin-bottom: 12px;
+        }
+
+            .navbar-nav .nav-item:last-child {
+                margin-bottom: 0;
+            }
+
+        .navbar-nav .nav-link {
+            display: inline-block;
+            font-size: 1.25rem;
+            padding: 4px 10px;
+        }
+
+    .hero-content h1,
+    .hero-content p {
+        white-space: normal;
+    }
+
+    /* Адаптация кнопки "Наверх" для планшетов с привязкой к сетке */
+    .scroll-to-top {
+        width: 48px;
+        height: 48px;
+        font-size: 22px;
+        bottom: calc(var(--site-edge-gutter) * 6); /* Слегка приподнимаем от края сетки */
+        left: calc(var(--site-edge-gutter) * 6); /* Сдвигаем вбок соразмерно сетке */
+    }
+}
+
+
+/* =========================================================================
+   23. МОБИЛЬНАЯ АДАПТИВНОСТЬ (Экран ≤ 576px)
+========================================================================= */
+@media (max-width: 576px) {
+    :root {
+        --site-edge-gutter: 2px;
+        --language-drop: 2px;
+        /*
+           Настройки символа BYN для мобильной версии.
+           Тут можешь отдельно играться с height и top.
+        */
+        --byn-calc-height: 0.75em;
+        --byn-calc-top: -0.5px;
+        --byn-services-height: 0.8em;
+        --byn-services-top: -2.0px;
+    }
+
+    .hero-section {
+        height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding-bottom: 0 !important;
+        margin: var(--site-edge-gutter) !important;
+    }
+
+    .hero-content {
+        gap: 1.75rem !important;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+    }
+
+        .hero-content h1 {
+            font-size: clamp(2.6rem, 7vw, 2.2rem);
+            line-height: 1.25;
+            white-space: normal;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero-content p {
+            font-size: 1rem;
+            line-height: 1.6;
+            white-space: normal;
+            max-width: 100%;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero-content .btn {
+            padding: 0.8rem 2.5rem !important;
+            font-size: 1.05rem !important;
+            box-shadow: var(--shadow-blue-soft);
+        }
+
+    .calc-price-title {
+        font-size: 1.05rem !important;
+        line-height: 1.4;
+    }
+
+    .calc-price-amount {
+        font-size: 1.2rem !important;
+    }
+
+        /*
+       Мобильная настройка BYN в калькуляторе.
+       Значения height/top берутся из мобильных переменных выше.
+    */
+        .calc-price-amount .byn-icon-calc {
+            height: var(--byn-calc-height) !important;
+            width: auto !important;
+            display: inline-block !important;
+            vertical-align: middle !important;
+            position: relative !important;
+            top: var(--byn-calc-top) !important;
+            filter: invert(21%) sepia(35%) saturate(1912%) hue-rotate(156deg) brightness(94%) contrast(98%) !important;
+        }
+
+    .page-title {
+        margin-top: 1.5rem !important;
+        margin-bottom: 1.25rem !important;
+        font-size: 1.65rem;
+        line-height: 1.2;
+        padding: 0 12px;
+    }
+
+    .brand {
+        font-size: 1.2rem;
+    }
+
+    .lang-divider {
+        display: none;
+    }
+
+    .lang-icon {
+        font-size: 1rem;
+    }
+
+    .lang-switcher {
+        padding: 5px 8px;
+    }
+
+    .lang-btn {
+        padding: 2px 10px;
+        font-size: 0.8rem;
+    }
+
+    .stories-page .category-header-wrapper:first-child {
+        margin-top: 1.25rem !important;
+    }
+
+    .category-title {
+        font-size: 1.35rem;
+    }
+
+    .home-section {
+        padding-top: 2.75rem;
+        padding-bottom: 2.75rem;
+    }
+
+    .home-features-section {
+        padding-top: 3rem;
+        padding-bottom: 2.25rem;
+    }
+
+    .home-features-row {
+        row-gap: 2.75rem;
+    }
+
+    .home-feature {
+        max-width: 330px;
+    }
+
+    .home-feature-icon {
+        width: 62px;
+        height: 62px;
+        margin-bottom: 0.85rem;
+        font-size: 2.65rem;
+    }
+
+    .home-feature-title {
+        margin-bottom: 0.65rem;
+        font-size: 1.35rem;
+        line-height: 1.25;
+    }
+
+    .home-feature-text {
+        font-size: 1rem;
+        line-height: 1.55;
+    }
+
+    .home-section-title {
+        margin-bottom: 1.5rem;
+        font-size: 1.55rem;
+        line-height: 1.2;
+        padding: 0 12px;
+    }
+
+    .home-media-section {
+        padding-top: 2.5rem;
+        padding-bottom: 3rem;
+    }
+
+    .chat-widget {
+        right: 12px;
+        bottom: 12px;
+    }
+
+    .chat-toggle {
+        width: 50px;
+        height: 50px;
+        font-size: 22px;
+    }
+
+    .chat-window {
+        position: fixed;
+        right: 8px;
+        left: auto;
+        bottom: 72px;
+        width: min(320px, calc(100vw - 16px));
+        max-height: 55vh;
+    }
+
+    .scroll-to-top {
+        width: 44px;
+        height: 44px;
+        font-size: 20px;
+        bottom: calc(var(--site-edge-gutter) * 6); /* 2px * 8 = 16px отступа снизу */
+        left: calc(var(--site-edge-gutter) * 6); /* 2px * 8 = 16px отступа слева */
+        background-color: rgba(26, 26, 46, 0.95);
+        border-width: 1.5px;
+        box-shadow: 0 4px 12px rgba(0, 255, 255, 0.25);
+    }
+}

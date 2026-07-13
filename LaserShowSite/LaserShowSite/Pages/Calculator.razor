@@ -1,0 +1,157 @@
+﻿@page "/calculator"
+@using System.Globalization
+@inject IStringLocalizer<Calculator> L
+
+<h2 class="neon-title page-title text-center">@L["Title"]</h2>
+<div class="container mb-5 calculator-page">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+
+            <!-- 1. Выбор типа шоу -->
+            <div class="mb-3">
+                <label class="form-label">@L["ShowType"]</label>
+                <select @bind="ShowType" class="form-control">
+                    <option value="animation">@L["Animation"]</option>
+                    <option value="beam">@L["Beam"]</option>
+                    <option value="combined">@L["Combined"]</option>
+                </select>
+            </div>
+
+            <!-- 2. Динамический ползунок длительности (полностью локализованный) -->
+            <div class="mb-3">
+                <label class="form-label">
+                    @L["Duration"] (@DurationUnitLabel)
+                </label>
+                <input type="range"
+                       min="@DurationMin"
+                       max="@DurationMax"
+                       step="1"
+                       @bind="duration"
+                       class="form-range" />
+                <span class="d-block mt-1 fw-bold">
+                    @duration @DurationUnitShort
+                </span>
+
+                @if (showType == "combined")
+                {
+                    <small class="text-info d-block mt-1">@L["CombinedIncludedNote"]</small>
+                }
+            </div>
+
+            <!-- 3. Расстояние для выезда за город -->
+            <div class="mb-3">
+                <label class="form-label">@L["DistanceLabel"]</label>
+                <input type="number" min="0" @bind="distance" class="form-control" placeholder="0" />
+                <small class="text-info d-inline-flex align-items-center mt-1">
+                    @L["DistanceNoteBefore"] @L["DeliveryRateValue"]
+                    @if (CultureInfo.CurrentCulture.Name.StartsWith("ru"))
+                    {
+                        <img src="images/byn.svg" class="byn-icon-calc ms-1 me-1" alt="BYN" />
+                    }
+                    else
+                    {
+                        <span class="ms-1 me-1 fw-semibold">BYN</span>
+                    }
+                    @L["DistanceNoteAfter"]
+                </small>
+            </div>
+
+            <!-- 4. Расчет стоимости -->
+            <div class="alert alert-info mt-4">
+                <h5 class="calc-price-title m-0">
+                    @L["EstimatedPrice"]:
+                    <strong class="calc-price-amount d-inline-flex align-items-center">
+                        @estimatedPrice.ToString("N2")
+                        @if (CultureInfo.CurrentCulture.Name.StartsWith("ru"))
+                        {
+                            <!-- Выводим КАРТИНКУ только для русской локали -->
+                            <img src="images/byn.svg" class="byn-icon-calc ms-1" alt="BYN" />
+                        }
+                        else
+                        {
+                            <!-- Выводим ТЕКСТ для английской локали -->
+                            <span class="ms-1 fs-5">BYN</span>
+                        }
+                    </strong>
+                </h5>
+                <small class="text-muted d-block mt-1">@L["PriceNote"]</small>
+            </div>
+
+            <!-- 5. Кнопка "Заказать" -->
+            <div class="text-center mt-4 mb-5">
+                <a href="/request" class="btn btn-primary px-5 py-2">@L["RequestQuote"]</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string showType = "animation"; // По умолчанию Анимационное
+    private double duration = 5;          // По умолчанию 5 минут
+    private int distance = 0;              // Расстояние по умолчанию 0 км
+
+    // Свойство-обертка для переключения типов шоу с автоматическим сбросом минут/часов
+    private string ShowType
+    {
+        get => showType;
+        set
+        {
+            if (showType != value)
+            {
+                showType = value;
+                // Сбрасываем длительность на минимальное значение для выбранного типа
+                duration = showType == "animation" ? 5 : 2;
+            }
+        }
+    }
+
+    // Динамические лимиты для ползунка
+    private int DurationMin => showType == "animation" ? 5 : 2;
+    private int DurationMax => showType == "animation" ? 30 : 10; // 30 мин для анимации, 10 часов для остальных
+
+    // Умная локализация единиц измерения в скобках: (минут/часов) или (minutes/hours)
+    private string DurationUnitLabel => showType == "animation"
+        ? (CultureInfo.CurrentCulture.Name.StartsWith("ru") ? "минут" : "minutes")
+        : (CultureInfo.CurrentCulture.Name.StartsWith("ru") ? "часов" : "hours");
+
+    // Умная локализация кратких единиц измерения под ползунком: "мин/ч" или "min/h"
+    private string DurationUnitShort => showType == "animation"
+        ? (CultureInfo.CurrentCulture.Name.StartsWith("ru") ? "мин" : "min")
+        : (CultureInfo.CurrentCulture.Name.StartsWith("ru") ? "ч" : "h");
+
+    // Основная формула расчета стоимости
+    private decimal estimatedPrice
+    {
+        get
+        {
+            decimal basePrice = 0;
+
+            if (showType == "animation")
+            {
+                // Начинается от 5 минут за 350 руб, каждая минута сверху + 100 руб
+                int mins = (int)duration;
+                if (mins < 5) mins = 5;
+                basePrice = 350 + (mins - 5) * 100;
+            }
+            else if (showType == "beam")
+            {
+                // Минимально 2 часа за 200 руб, каждый час сверху + 100 руб
+                int hours = (int)duration;
+                if (hours < 2) hours = 2;
+                basePrice = 200 + (hours - 2) * 100;
+            }
+            else if (showType == "combined")
+            {
+                // Минимально 2 часа за 400 руб, каждый час сверху + 100 руб
+                int hours = (int)duration;
+                if (hours < 2) hours = 2;
+                basePrice = 400 + (hours - 2) * 100;
+            }
+
+            // Доставка: 30 копеек за 1 км (0.30 BYN)
+            decimal travelFee = (decimal)distance * 0.30M;
+
+            return basePrice + travelFee;
+        }
+    }
+}

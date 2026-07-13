@@ -1,0 +1,165 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Title" xml:space="preserve">
+    <value>Frequently Asked Questions</value>
+  </data>
+  <data name="Q1" xml:space="preserve">
+    <value>How exactly is the animation laser show performed?</value>
+  </data>
+  <data name="A1" xml:space="preserve">
+    <value>A high-tech laser projector projects vibrant, dynamic graphics and storyline animations onto a special semi-transparent mesh screen in perfect synchronization with the music. This creates a stunning illusion of a 3D image floating in mid-air.</value>
+  </data>
+  <data name="Q2" xml:space="preserve">
+    <value>Can the animation show be performed outdoors?</value>
+  </data>
+  <data name="A2" xml:space="preserve">
+    <value>Storyline animation shows are performed primarily indoors. This is because projection requires a special tension mesh screen that is sensitive to strong wind gusts. However, in calm, windless weather, projecting directly onto a flat building facade is possible.</value>
+  </data>
+  <data name="Q3" xml:space="preserve">
+    <value>Is it possible to develop a custom script and choose our own music?</value>
+  </data>
+  <data name="A3" xml:space="preserve">
+    <value>Absolutely! We can create a unique laser love story, a spectacular brand presentation, or a custom festive show based on your personal script, set to any music of your choice. Every detail of the video is coordinated with you step-by-step during the production process.</value>
+  </data>
+  <data name="Q4" xml:space="preserve">
+    <value>How much time is needed to prepare the laser show?</value>
+  </data>
+  <data name="A4" xml:space="preserve">
+    <value>If you choose a standard program from our library (e.g., classic wedding, New Year, or graduation theme), preparation takes 2 to 5 days. Creating a fully custom animation video from scratch based on your requirements requires 2 to 4 weeks of meticulous work by our animator.</value>
+  </data>
+  <data name="Q5" xml:space="preserve">
+    <value>Is a fog or haze machine used during the performance?</value>
+  </data>
+  <data name="A5" xml:space="preserve">
+    <value>Yes, for a spatial beam show, having a light haze in the air is critical, as it makes the laser beams visible and spectacular. We use professional, safe haze generators (hazers). We always pre-coordinate their usage with your venue's management.</value>
+  </data>
+  <data name="A6" xml:space="preserve">
+    <value>A beam show is a powerful spatial performance. It is typically used as a spectacular musical interlude, a grand climax of the event, a dynamic opening for the dance floor, or to brilliantly highlight key moments of the entertainment program and contests.</value>
+  </data>
+  <data name="Q7" xml:space="preserve">
+    <value>Which is better for a wedding: a beam or animation show?</value>
+  </data>
+  <data name="A7" xml:space="preserve">
+    <value>It depends on your goals. If you want to tell a touching and romantic story of how you met — a graphical animation show on a screen is the ideal choice. If you want to spectacularly enhance the newlyweds' first dance or energize the dance floor — a beam show will create an incredible, magical atmosphere. For the ultimate impact, we recommend the combined option.</value>
+  </data>
+  <data name="Q6" xml:space="preserve">
+    <value>How is the beam show conducted at an event?</value>
+  </data>
+</root>

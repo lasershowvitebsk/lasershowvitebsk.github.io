@@ -1,0 +1,50 @@
+﻿@page "/contacts"
+@inject IStringLocalizer<Contacts> L
+
+<h2 class="neon-title page-title text-center">@L["Title"]</h2>
+
+<div class="container mb-5 contacts-page">
+    <div class="row justify-content-center mb-5">
+        <div class="col-md-6 col-lg-5">
+            <div class="card contact-card p-4 text-center">
+
+                <p class="text-muted mb-4 px-3" style="line-height: 1.6; font-size: 1.05rem;">
+                    @L["Subtitle"]
+                </p>
+
+                <div class="contacts-list">
+                    <!-- 1. Звонок по телефону -->
+                    <a href="tel:+375292180739" class="contact-btn btn-phone">
+                        <i class="fas fa-phone-alt"></i>
+                        <span>+375 (29) 218-07-39</span>
+                    </a>
+
+                    <!-- 2. Instagram (ссылка-градиент) -->
+                    <a href="https://instagram.com/lasershowvitebsk" target="_blank" class="contact-btn btn-instagram">
+                        <i class="fab fa-instagram"></i>
+                        <span>@L["Instagram"]</span>
+                    </a>
+
+                    <!-- 3. Viber (фирменный фиолетовый) -->
+                    <a href="https://viber.click/375292180739" target="_blank" class="contact-btn btn-viber">
+                        <i class="fab fa-viber"></i>
+                        <span>@L["Viber"]</span>
+                    </a>
+
+                    <!-- 4. WhatsApp (зеленый) -->
+                    <a href="https://wa.me/375292180739" target="_blank" class="contact-btn btn-whatsapp">
+                        <i class="fab fa-whatsapp"></i>
+                        <span>@L["WhatsApp"]</span>
+                    </a>
+                </div>
+
+                <!-- Дополнительная информация внизу карточки -->
+                <div class="mt-4 pt-3 border-top border-secondary text-muted" style="font-size: 0.9rem;">
+                    <p class="mb-1"><i class="far fa-clock me-2"></i>@L["WorkHours"]</p>
+                    <p class="mb-0"><i class="fas fa-map-marker-alt me-2"></i>@L["Address"]</p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

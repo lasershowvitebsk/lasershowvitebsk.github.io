@@ -1,0 +1,152 @@
+﻿@page "/work-steps"
+@inject IStringLocalizer<WorkSteps> L
+
+<PageTitle>@L["PageTitle"]</PageTitle>
+
+<h2 class="neon-title page-title text-center">@L["PageTitle"]</h2>
+
+<div class="container mb-5 work-steps-page">
+    <p class="work-steps-lead text-center">
+        @L["Intro"]
+    </p>
+
+    <div class="row g-4">
+        @for (var i = 0; i < steps.Count; i++)
+        {
+            var step = steps[i];
+
+            <div class="col-lg-4 col-md-6">
+                <div class="work-step-card h-100">
+                    <div class="work-step-top">
+                        <span class="work-step-number">@((i + 1).ToString("D2"))</span>
+
+                        <div class="work-step-icon">
+                            <i class="@step.IconClass"></i>
+                        </div>
+                    </div>
+
+                    <h3 class="work-step-title">@L[step.TitleKey]</h3>
+
+                    <p class="work-step-text">
+                        @L[step.TextKey]
+                    </p>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="row g-4 mt-4">
+        <div class="col-lg-6">
+            <div class="work-info-card h-100">
+                <h3 class="work-info-title">
+                    <i class="fas fa-list-check me-2"></i>
+                    @L["NeedTitle"]
+                </h3>
+
+                <ul class="work-info-list">
+                    <li>@L["NeedItem1"]</li>
+                    <li>@L["NeedItem2"]</li>
+                    <li>@L["NeedItem3"]</li>
+                    <li>@L["NeedItem4"]</li>
+                    <li>@L["NeedItem5"]</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="work-info-card h-100">
+                <h3 class="work-info-title">
+                    <i class="fas fa-file-signature me-2"></i>
+                    @L["PaymentTitle"]
+                </h3>
+
+                <p class="work-info-text">
+                    @L["PaymentText"]
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="work-steps-cta text-center mt-5">
+        <h3>@L["CtaTitle"]</h3>
+
+        <p>
+            @L["CtaText"]
+        </p>
+
+        <div class="d-flex flex-column flex-sm-row justify-content-center gap-3 mt-4">
+            <a href="/request" class="btn btn-primary btn-lg">
+                @L["CtaRequest"]
+            </a>
+
+            <a href="/calculator" class="btn btn-outline-info btn-lg">
+                @L["CtaCalculator"]
+            </a>
+        </div>
+    </div>
+</div>
+
+@code {
+    private readonly List<WorkStepItem> steps = new()
+    {
+        new WorkStepItem(
+            "Step1Title",
+            "Step1Text",
+            "fas fa-paper-plane"
+        ),
+        new WorkStepItem(
+            "Step2Title",
+            "Step2Text",
+            "fas fa-comments"
+        ),
+        new WorkStepItem(
+            "Step3Title",
+            "Step3Text",
+            "fas fa-film"
+        ),
+        new WorkStepItem(
+            "Step4Title",
+            "Step4Text",
+            "fas fa-music"
+        ),
+        new WorkStepItem(
+            "Step5Title",
+            "Step5Text",
+            "fas fa-calculator"
+        ),
+        new WorkStepItem(
+            "Step6Title",
+            "Step6Text",
+            "fas fa-file-contract"
+        ),
+        new WorkStepItem(
+            "Step7Title",
+            "Step7Text",
+            "fas fa-wand-magic-sparkles"
+        ),
+        new WorkStepItem(
+            "Step8Title",
+            "Step8Text",
+            "fas fa-screwdriver-wrench"
+        ),
+        new WorkStepItem(
+            "Step9Title",
+            "Step9Text",
+            "fas fa-star"
+        )
+    };
+
+    private class WorkStepItem
+    {
+        public WorkStepItem(string titleKey, string textKey, string iconClass)
+        {
+            TitleKey = titleKey;
+            TextKey = textKey;
+            IconClass = iconClass;
+        }
+
+        public string TitleKey { get; }
+        public string TextKey { get; }
+        public string IconClass { get; }
+    }
+}

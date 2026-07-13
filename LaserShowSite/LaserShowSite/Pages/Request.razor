@@ -1,0 +1,477 @@
+﻿@page "/request"
+@implements IDisposable
+@using Microsoft.AspNetCore.Components.Forms
+@using System.Globalization
+@using System.Text
+@using System.Threading
+@inject IStringLocalizer<Request> L
+@inject RequestService RequestService
+@inject IJSRuntime JS
+
+<h2 class="neon-title page-title text-center">@L["Title"]</h2>
+
+<div class="container mb-5 request-page">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <EditForm EditContext="@editContext" OnValidSubmit="HandleSubmit">
+                <DataAnnotationsValidator />
+
+                <div @oninput="HideSuccessMessage" @onchange="HideSuccessMessage">
+
+                    <div class="mb-3">
+                        <label for="name-input" class="form-label required-label">@L["Name"]</label>
+
+                        <InputText id="name-input"
+                                   @bind-Value="requestModel.Name"
+                                   @oninput="OnNameInput"
+                                   @onblur="OnNameBlur"
+                                   class="form-control"
+                                   required
+                                   placeholder="@L["NamePlaceholder"]" />
+
+                        <ValidationMessage For="@(() => requestModel.Name)" class="text-danger mt-1" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="phone-input" class="form-label required-label">@L["Phone"]</label>
+
+                        <InputText id="phone-input"
+                                   @bind-Value="requestModel.Phone"
+                                   @oninput="OnPhoneInput"
+                                   @onblur="OnPhoneBlur"
+                                   class="form-control"
+                                   required
+                                   inputmode="tel"
+                                   maxlength="17"
+                                   placeholder="+375-XX-XXX-XX-XX" />
+
+                        <ValidationMessage For="@(() => requestModel.Phone)" class="text-danger mt-1" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email-input" class="form-label">@L["Email"]</label>
+
+                        <InputText id="email-input"
+                                   @bind-Value="requestModel.Email"
+                                   @oninput="OnEmailInput"
+                                   @onblur="OnEmailBlur"
+                                   class="form-control"
+                                   type="email"
+                                   placeholder="@L["EmailPlaceholder"]" />
+
+                        <ValidationMessage For="@(() => requestModel.Email)" class="text-danger mt-1" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="event-type-input" class="form-label required-label">@L["EventType"]</label>
+
+                        <!--
+                        @bind-Value:after — срабатывает после того как Blazor обновил модель.
+                        Нужно чтобы ValidationMessage сбрасывался сразу после выбора значения.
+                    -->
+                        <InputSelect id="event-type-input"
+                                     @bind-Value="requestModel.EventType"
+                                     @bind-Value:after="OnEventTypeChanged"
+                                     class="form-control"
+                                     required>
+                            <option value="">@L["SelectEvent"]</option>
+                            <option value="wedding">@L["Wedding"]</option>
+                            <option value="romanticRoEvening">@L["RomanticEvening"]</option>
+                            <option value="corporate">@L["Corporate"]</option>
+                            <option value="birthday">@L["Birthday"]</option>
+                            <option value="childrenShow">@L["ChildrenShow"]</option>
+                            <option value="other">@L["Other"]</option>
+                        </InputSelect>
+
+                        <ValidationMessage For="@(() => requestModel.EventType)" class="text-danger mt-1" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="event-date-input" class="form-label required-label">@L["EventDate"]</label>
+
+                        <!--
+                        @bind:after — срабатывает после обновления модели датой.
+                        Нужно чтобы ValidationMessage обновлялся при смене даты.
+                        min запрещает выбор прошедших дат на уровне календаря.
+                    -->
+                        <input id="event-date-input"
+                               type="date"
+                               @bind="requestModel.EventDate"
+                               @bind:after="OnEventDateChanged"
+                               class="form-control"
+                               required
+                               min="@DateTime.Today.ToString("yyyy-MM-dd")"
+                               lang="@CultureInfo.CurrentCulture.TwoLetterISOLanguageName" />
+
+                        <ValidationMessage For="@(() => requestModel.EventDate)" class="text-danger mt-1" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="guests-input" class="form-label">@L["Guests"]</label>
+
+                        <!--
+                        onkeypress убран — фильтрация цифр теперь в OnGuestsInput,
+                        что защищает в том числе от вставки текста через Ctrl+V.
+                    -->
+                        <InputText id="guests-input"
+                                   @bind-Value="requestModel.Guests"
+                                   @oninput="OnGuestsInput"
+                                   @onblur="OnGuestsBlur"
+                                   class="form-control"
+                                   placeholder="@L["GuestsPlaceholder"]"
+                                   maxlength="5"
+                                   inputmode="numeric"
+                                   onkeydown="if(event.key.length===1 && !/\d/.test(event.key)) event.preventDefault();" />
+
+                        <ValidationMessage For="@(() => requestModel.Guests)" class="text-danger mt-1" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="details-input" class="form-label required-label">@L["Details"]</label>
+
+                        <InputTextArea id="details-input"
+                                       @bind-Value="requestModel.Details"
+                                       @oninput="OnDetailsInput"
+                                       @onblur="OnDetailsBlur"
+                                       class="form-control"
+                                       rows="4"
+                                       required
+                                       placeholder="@L["DetailsPlaceholder"]" />
+
+                        <ValidationMessage For="@(() => requestModel.Details)" class="text-danger mt-1" />
+                    </div>
+
+                </div>
+
+                <div class="text-center mt-4 mb-5">
+                    <button type="submit"
+                            class="btn btn-primary px-5 py-2 btn-submit"
+                            disabled="@(!CanSubmit)">
+                        @L["Submit"]
+                    </button>
+                </div>
+            </EditForm>
+
+            @if (submitSuccess)
+            {
+                <div id="success-message" class="alert alert-success mt-3 text-center">
+                    @L["SuccessMessage"]
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private RequestModel requestModel = new RequestModel();
+    private EditContext editContext = default!;
+
+    private bool submitSuccess = false;
+    private bool _shouldScrollToSuccess = false;
+    private CancellationTokenSource? successMessageCts;
+
+    // Поля для восстановления курсора в поле телефона после рендера
+    private int _phoneCursorPos = 0;
+    private bool _shouldRestorePhoneCursor = false;
+
+    // ──────────────── Доступность кнопки Submit ────────────────
+
+    private bool CanSubmit =>
+        !string.IsNullOrWhiteSpace(requestModel.Name)
+        && !string.IsNullOrWhiteSpace(requestModel.Phone)
+        && !string.IsNullOrWhiteSpace(requestModel.EventType)
+        && requestModel.EventDate.HasValue
+        && requestModel.EventDate.Value.Date >= DateTime.Today
+        && !string.IsNullOrWhiteSpace(requestModel.Details);
+
+    // ──────────────── Инициализация ────────────────
+
+    protected override void OnInitialized()
+    {
+        requestModel.EventDate = DateTime.Today;
+        editContext = new EditContext(requestModel);
+    }
+
+    // ──────────────── Общий хелпер валидации ────────────────
+
+    /// <summary>
+    /// Перепроверяет поле только если оно уже было тронуто —
+    /// ошибка убирается сразу при исправлении, но не появляется
+    /// раньше чем пользователь покинул поле (blur).
+    /// </summary>
+    private void NotifyIfModified<T>(
+        System.Linq.Expressions.Expression<Func<T>> accessor)
+    {
+        var fieldId = FieldIdentifier.Create(accessor);
+        if (editContext.IsModified(fieldId))
+            editContext.NotifyFieldChanged(fieldId);
+    }
+
+    // ──────────────── Имя ────────────────
+
+    private void OnNameInput(ChangeEventArgs e)
+    {
+        requestModel.Name = e.Value?.ToString();
+        NotifyIfModified(() => requestModel.Name);
+    }
+
+    private void OnNameBlur() =>
+        editContext.NotifyFieldChanged(FieldIdentifier.Create(() => requestModel.Name));
+
+    // ──────────────── Телефон (+375-XX-XXX-XX-XX) ────────────────
+
+    private async Task OnPhoneInput(ChangeEventArgs e)
+    {
+        var rawValue = e.Value?.ToString() ?? string.Empty;
+
+        // Сохраняем позицию курсора ДО того как Blazor перерисует поле
+        var cursor = await JS.InvokeAsync<int>("getCaretPosition", "phone-input");
+
+        var rawLen = rawValue.Length;
+        requestModel.Phone = FormatPhoneNumber(rawValue);
+        var formattedLen = requestModel.Phone.Length;
+
+        // Корректируем позицию на кол-во автодобавленных/удалённых символов (дефисы)
+        var adjustment = formattedLen - rawLen;
+        _phoneCursorPos = Math.Max(5, cursor + adjustment); // 5 = длина "+375-"
+        _shouldRestorePhoneCursor = true;
+
+        NotifyIfModified(() => requestModel.Phone);
+    }
+
+    private void OnPhoneBlur() =>
+        editContext.NotifyFieldChanged(FieldIdentifier.Create(() => requestModel.Phone));
+
+    /// <summary>
+    /// Форматирует произвольный ввод в +375-XX-XXX-XX-XX.
+    /// Цифры собираются из ввода, дефисы расставляются автоматически.
+    /// Если пользователь стёр часть префикса — возвращаем "+375".
+    /// </summary>
+    private static string FormatPhoneNumber(string input)
+    {
+        var allDigits = new string(input.Where(char.IsDigit).ToArray());
+
+        string digits;
+
+        if (allDigits.StartsWith("375"))
+        {
+            digits = allDigits.Length > 3 ? allDigits[3..] : string.Empty;
+        }
+        else if (allDigits.Length < 3)
+        {
+            // Обрывок префикса — не превращаем в код оператора
+            return "+375";
+        }
+        else
+        {
+            digits = allDigits;
+        }
+
+        if (digits.Length > 9)
+            digits = digits[..9];
+
+        if (digits.Length == 0)
+            return "+375";
+
+        var sb = new StringBuilder("+375-");
+
+        sb.Append(digits[..Math.Min(2, digits.Length)]);
+
+        if (digits.Length > 2)
+        {
+            sb.Append('-');
+            sb.Append(digits[2..Math.Min(5, digits.Length)]);
+        }
+
+        if (digits.Length > 5)
+        {
+            sb.Append('-');
+            sb.Append(digits[5..Math.Min(7, digits.Length)]);
+        }
+
+        if (digits.Length > 7)
+        {
+            sb.Append('-');
+            sb.Append(digits[7..Math.Min(9, digits.Length)]);
+        }
+
+        return sb.ToString();
+    }
+
+    // ──────────────── Email ────────────────
+
+    private void OnEmailInput(ChangeEventArgs e)
+    {
+        requestModel.Email = e.Value?.ToString();
+        NotifyIfModified(() => requestModel.Email);
+    }
+
+    private void OnEmailBlur() =>
+        editContext.NotifyFieldChanged(FieldIdentifier.Create(() => requestModel.Email));
+
+    // ──────────────── Тип мероприятия ────────────────
+
+    /// <summary>
+    /// Вызывается через @bind-Value:after после того как Blazor обновил модель.
+    /// Сбрасывает ValidationMessage сразу при выборе значения из списка.
+    /// </summary>
+    private void OnEventTypeChanged() =>
+        editContext.NotifyFieldChanged(FieldIdentifier.Create(() => requestModel.EventType));
+
+    // ──────────────── Дата мероприятия ────────────────
+
+    /// <summary>
+    /// Вызывается через @bind:after после того как Blazor обновил модель датой.
+    /// Сбрасывает ValidationMessage сразу при выборе даты.
+    /// </summary>
+    private void OnEventDateChanged()
+    {
+        // Если пользователь на iPhone выбрал прошедшую дату — сбрасываем её на сегодня
+        if (requestModel.EventDate.HasValue && requestModel.EventDate.Value.Date < DateTime.Today)
+        {
+            requestModel.EventDate = DateTime.Today;
+        }
+
+        editContext.NotifyFieldChanged(FieldIdentifier.Create(() => requestModel.EventDate));
+    }
+
+    // ──────────────── Количество гостей ────────────────
+
+    private void OnGuestsInput(ChangeEventArgs e)
+    {
+        var raw = e.Value?.ToString() ?? string.Empty;
+
+        // Оставляем только цифры — защищает в т.ч. от вставки текста (Ctrl+V)
+        var digitsOnly = new string(raw.Where(char.IsDigit).ToArray());
+
+        // Страхуемся от paste длиннее 5 символов (maxlength на InputText не всегда срабатывает)
+        if (digitsOnly.Length > 5)
+            digitsOnly = digitsOnly[..5];
+
+        requestModel.Guests = digitsOnly.Length > 0 ? digitsOnly : null;
+        NotifyIfModified(() => requestModel.Guests);
+    }
+
+    private void OnGuestsBlur() =>
+        editContext.NotifyFieldChanged(FieldIdentifier.Create(() => requestModel.Guests));
+
+    // ──────────────── Детали ────────────────
+
+    private void OnDetailsInput(ChangeEventArgs e)
+    {
+        requestModel.Details = e.Value?.ToString();
+        NotifyIfModified(() => requestModel.Details);
+    }
+
+    private void OnDetailsBlur() =>
+        editContext.NotifyFieldChanged(FieldIdentifier.Create(() => requestModel.Details));
+
+    // ──────────────── Сообщение об успехе ────────────────
+
+    private void HideSuccessMessage()
+    {
+        if (!submitSuccess) return;
+        submitSuccess = false;
+        successMessageCts?.Cancel();
+    }
+
+    private void StartSuccessMessageAutoHide()
+    {
+        successMessageCts?.Cancel();
+        successMessageCts?.Dispose();
+        successMessageCts = new CancellationTokenSource();
+        _ = HideSuccessMessageAfterDelayAsync(successMessageCts.Token);
+    }
+
+    private async Task HideSuccessMessageAfterDelayAsync(CancellationToken token)
+    {
+        try
+        {
+            await Task.Delay(TimeSpan.FromSeconds(7), token);
+            if (token.IsCancellationRequested) return;
+            submitSuccess = false;
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (OperationCanceledException) { }
+    }
+
+    // ──────────────── Отправка формы ────────────────
+
+    private async Task HandleSubmit()
+    {
+        if (requestModel.Name != null) requestModel.Name = requestModel.Name.Trim();
+        if (requestModel.Phone != null) requestModel.Phone = requestModel.Phone.Trim();
+        if (requestModel.Email != null) requestModel.Email = requestModel.Email.Trim();
+        if (requestModel.Guests != null) requestModel.Guests = requestModel.Guests.Trim();
+        if (requestModel.Details != null) requestModel.Details = requestModel.Details.Trim();
+
+        if (!CanSubmit) return;
+
+        var success = await RequestService.SubmitRequestAsync(requestModel);
+
+        if (success)
+        {
+            submitSuccess = true;
+            _shouldScrollToSuccess = true;
+
+            // Сбрасываем модель и контекст валидации
+            requestModel = new RequestModel { EventDate = DateTime.Today };
+            editContext = new EditContext(requestModel);
+
+            StartSuccessMessageAutoHide();
+        }
+    }
+
+    // ──────────────── JS-хуки ────────────────
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                await JS.InvokeVoidAsync("applyPhoneMask", "phone-input");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"applyPhoneMask: {ex.Message}");
+            }
+        }
+
+        // Восстанавливаем курсор в поле телефона после рендера
+        if (_shouldRestorePhoneCursor)
+        {
+            _shouldRestorePhoneCursor = false;
+            try
+            {
+                await JS.InvokeVoidAsync("setCaretPosition", "phone-input", _phoneCursorPos);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"setCaretPosition: {ex.Message}");
+            }
+        }
+
+        // Скролл к сообщению об успехе
+        if (_shouldScrollToSuccess)
+        {
+            _shouldScrollToSuccess = false;
+            try
+            {
+                await JS.InvokeVoidAsync("scrollToElement", "success-message");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"scrollToElement: {ex.Message}");
+            }
+        }
+    }
+
+    // ──────────────── Очистка ────────────────
+
+    public void Dispose()
+    {
+        successMessageCts?.Cancel();
+        successMessageCts?.Dispose();
+    }
+}

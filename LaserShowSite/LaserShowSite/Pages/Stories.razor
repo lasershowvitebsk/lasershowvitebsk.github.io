@@ -1,0 +1,160 @@
+﻿@page "/stories"
+@implements IAsyncDisposable
+@using Microsoft.JSInterop
+@inject IStringLocalizer<Stories> L
+@inject IJSRuntime JS
+
+<h2 class="neon-title page-title text-center">@L["Title"]</h2>
+
+<div class="container mb-5 stories-page">
+    @foreach (var category in categories)
+    {
+        <!-- Заголовок категории с неоновой линией -->
+        <div class="category-header-wrapper mt-5 mb-4">
+            <h3 class="category-title">@L[category.NameKey]</h3>
+        </div>
+
+        <!-- Сетка видеороликов -->
+        <div class="row">
+            @foreach (var video in category.Videos)
+            {
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card service-card h-100">
+                        <div class="card-body p-0 overflow-hidden" style="border-radius: 15px 15px 0 0;">
+                            <!-- Адаптивный контейнер для YouTube iframe -->
+                            <div class="video-wrapper">
+                                <iframe id="@($"yt-{video.TitleKey}")"
+                                        class="stories-video-iframe"
+                                        src="@BuildYoutubeUrl(video.YoutubeId)"
+                                        title="@L[video.TitleKey]"
+                                        frameborder="0"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                        allowfullscreen>
+                                </iframe>
+                            </div>
+                        </div>
+
+                        <div class="card-footer bg-transparent border-0 py-3 text-center">
+                            <h5 class="video-card-title">@L[video.TitleKey]</h5>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private List<CategoryGroup> categories = new();
+
+    protected override void OnInitialized()
+    {
+        categories = new List<CategoryGroup>
+        {
+            new CategoryGroup
+            {
+                NameKey = "CatWedding",
+                Videos = new List<VideoItem>
+                {
+                    new VideoItem { TitleKey = "WedVid1", YoutubeId = "mEbO-8UL7vg" },
+                    new VideoItem { TitleKey = "WedVid2", YoutubeId = "JX7_JmqdS9U" },
+                    new VideoItem { TitleKey = "WedVid3", YoutubeId = "Yssv3Y1dyCY" }
+                }
+            },
+            new CategoryGroup
+            {
+                NameKey = "CatRomantic",
+                Videos = new List<VideoItem>
+                {
+                    new VideoItem { TitleKey = "RomVid1", YoutubeId = "wDDSZMtRuaA" },
+                    new VideoItem { TitleKey = "RomVid2", YoutubeId = "6OwiXvACVLs" }
+                }
+            },
+            new CategoryGroup
+            {
+                NameKey = "CatNewYear",
+                Videos = new List<VideoItem>
+                {
+                    new VideoItem { TitleKey = "NyVid1", YoutubeId = "jt0d_nhF4CQ" },
+                    new VideoItem { TitleKey = "NyVid2", YoutubeId = "9METpOAAiUk" },
+                    new VideoItem { TitleKey = "NyVid3", YoutubeId = "SdUxlPOUsOU" },
+                    new VideoItem { TitleKey = "NyVid4", YoutubeId = "4vnf_cUJvjo" },
+                    new VideoItem { TitleKey = "NyVid5", YoutubeId = "JjndhZVlaxE" }
+                }
+            },
+            new CategoryGroup
+            {
+                NameKey = "CatAnniversary",
+                Videos = new List<VideoItem>
+                {
+                    new VideoItem { TitleKey = "AnnVid1", YoutubeId = "ROsvVsuiHfM" },
+                    new VideoItem { TitleKey = "AnnVid2", YoutubeId = "tiNWeb4lPus" }
+                }
+            },
+            new CategoryGroup
+            {
+                NameKey = "CatChildren",
+                Videos = new List<VideoItem>
+                {
+                    new VideoItem { TitleKey = "ChildrenVid1", YoutubeId = "cNMOuSrRCHE" },
+                    new VideoItem { TitleKey = "ChildrenVid2", YoutubeId = "TeQnXVu1OiY" }
+                }
+            },
+            new CategoryGroup
+            {
+                NameKey = "CatOther",
+                Videos = new List<VideoItem>
+                {
+                    new VideoItem { TitleKey = "OthVid1", YoutubeId = "1-7v_zYsTic" },
+                    new VideoItem { TitleKey = "OthVid2", YoutubeId = "BZNxPqy_sa4" }
+                }
+            }
+        };
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Инициализируем YouTube-плееры.
+            // Теперь при запуске одного ролика остальные будут ставиться на паузу.
+            await JS.InvokeVoidAsync("initStoriesYouTubePlayers", ".stories-video-iframe");
+        }
+    }
+
+    private string BuildYoutubeUrl(string youtubeId)
+    {
+        // enablejsapi=1 нужен, чтобы JavaScript мог управлять YouTube iframe
+        // rel=0 уменьшает количество посторонних рекомендаций после просмотра
+        return $"https://www.youtube.com/embed/{youtubeId}?enablejsapi=1&rel=0";
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            // При уходе со страницы очищаем YouTube-плееры
+            await JS.InvokeVoidAsync("destroyStoriesYouTubePlayers");
+        }
+        catch (JSDisconnectedException)
+        {
+            // Это нормально, если соединение JS уже закрыто
+        }
+        catch (InvalidOperationException)
+        {
+            // Это нормально, если компонент уже уничтожается
+        }
+    }
+
+    public class VideoItem
+    {
+        public string TitleKey { get; set; } = string.Empty;
+        public string YoutubeId { get; set; } = string.Empty;
+    }
+
+    public class CategoryGroup
+    {
+        public string NameKey { get; set; } = string.Empty;
+        public List<VideoItem> Videos { get; set; } = new();
+    }
+}

@@ -1,0 +1,114 @@
+﻿@page "/"
+@inject IStringLocalizer<Home> L
+
+<div class="hero-section">
+    <div class="hero-content">
+        <h1 class="neon-title">@L["HeroTitle"]</h1>
+        <p class="lead">@L["HeroSubtitle"]</p>
+        <a href="/request" class="btn btn-primary btn-lg">@L["RequestButton"]</a>
+    </div>
+</div>
+
+<section class="home-section home-features-section">
+    <div class="container">
+        <div class="row text-center home-features-row">
+            <div class="col-md-4">
+                <div class="home-feature">
+                    <div class="home-feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+
+                    <h3 class="home-feature-title">@L["Feature1Title"]</h3>
+
+                    <p class="home-feature-text">
+                        @L["Feature1Desc"]
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="home-feature">
+                    <div class="home-feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+
+                    <h3 class="home-feature-title">@L["Feature2Title"]</h3>
+
+                    <p class="home-feature-text">
+                        @L["Feature2Desc"]
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="home-feature">
+                    <div class="home-feature-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+
+                    <h3 class="home-feature-title">@L["Feature3Title"]</h3>
+
+                    <p class="home-feature-text">
+                        @L["Feature3Desc"]
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Секция видео (растянута с container-fluid) -->
+<section class="home-section home-media-section video-section">
+    <div class="container-fluid">
+        <h2 class="home-section-title">@L["VideoTitle"]</h2>
+
+        <div class="home-video-box">
+            <div class="video-wrapper">
+                <iframe src="@($"https://www.youtube.com/embed/74LXLOh-mIs")"
+                        title="@L["VideoTitle"]"
+                        frameborder="0"
+                        loading="lazy"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowfullscreen>
+                </iframe>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Секция галереи с обнулением зазоров g-0 для точного выравнивания краев -->
+<section class="home-section home-media-section gallery-section">
+    <div class="container-fluid">
+        <h2 class="home-section-title">@L["GalleryTitle"]</h2>
+
+        <div class="home-gallery-box">
+            <div class="row g-0">
+                @foreach (var img in galleryImages)
+                {
+                    <div class="col-lg-4 col-md-6 col-12 p-1">
+                        <img src="@img"
+                             class="img-fluid gallery-img"
+                             alt="Laser show"
+                             loading="lazy"
+                             decoding="async" />
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+
+@code {
+    // Замени ВАШ_ID на реальный ID ролика с YouTube.
+    private const string MainVideoYoutubeId = "ВАШ_ID";
+
+    private string[] galleryImages = new[]
+    {
+        "images/photo1.webp",
+        "images/photo2.webp",
+        "images/photo3.webp",
+        "images/photo4.webp",
+        "images/photo5.webp",
+        "images/photo6.webp"
+    };
+}

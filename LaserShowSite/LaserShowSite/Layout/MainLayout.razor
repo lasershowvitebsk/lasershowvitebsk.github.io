@@ -1,0 +1,69 @@
+﻿@using System.Globalization
+@inherits LayoutComponentBase
+@implements IDisposable
+@inject ILocalStorageService LocalStorage
+@inject NavigationManager Navigation
+@inject IJSRuntime JsRuntime
+
+<div class="page">
+    <header class="main-header">
+        <!-- Верхняя строка: логотип + переключатель языка -->
+        <div class="header-top">
+            <a class="brand" href="/">✨ LaserShow</a>
+            <div class="language-wrapper">
+                <span class="lang-divider">|</span>
+                <i class="fas fa-globe lang-icon"></i>
+                <div class="lang-switcher">
+                    <button class="lang-btn @(CultureInfo.CurrentCulture.Name.StartsWith("ru") ? "active" : "")"
+                            @onclick="SetLanguageRu">
+                        RU
+                    </button>
+                    <button class="lang-btn @(CultureInfo.CurrentCulture.Name.StartsWith("en") ? "active" : "")"
+                            @onclick="SetLanguageEn">
+                        EN
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Нижняя строка: меню -->
+        <div class="header-bottom">
+            <NavMenu />
+        </div>
+    </header>
+
+    <main>
+        <article class="content">
+            @Body
+        </article>
+        <ChatWidget />
+        <ScrollToTop />
+    </main>
+</div>
+
+@code {
+    private async Task SetLanguage(string culture)
+    {
+        await LocalStorage.SetItemAsync("culture", culture);
+        Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
+    }
+
+    private async Task SetLanguageRu() => await SetLanguage("ru-RU");
+    private async Task SetLanguageEn() => await SetLanguage("en-US");
+
+    protected override void OnInitialized()
+    {
+        Navigation.LocationChanged += OnLocationChanged;
+    }
+
+    private async void OnLocationChanged(object sender, LocationChangedEventArgs e)
+    {
+        // Прокручиваем страницу вверх при каждом переходе
+        await JsRuntime.InvokeVoidAsync("window.scrollTo", 0, 0);
+    }
+
+    public void Dispose()
+    {
+        Navigation.LocationChanged -= OnLocationChanged;
+    }
+}

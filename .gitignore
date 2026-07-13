@@ -1,0 +1,16 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Build результаты
+**/bin/
+**/obj/
+
+# Временные файлы
+*.swp
+*~
+
+# Windows
+Thumbs.db
+Desktop.ini

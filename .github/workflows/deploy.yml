@@ -1,0 +1,60 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write # Изменено с read на write, чтобы sitemap-генератор мог создать файл
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Важно! Позволяет генератору sitemap читать даты коммитов для тега <lastmod>
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Publish
+        # Теперь dotnet publish автоматически запустит пререндерер BlazorWasmPreRendering.Build
+        run: dotnet publish LaserShowSite/LaserShowSite/LaserShowSite.csproj -c Release -o ./release
+
+      - name: Add .nojekyll
+        run: touch ./release/wwwroot/.nojekyll
+
+      # На всякий случай копируем index.html в 404.html, 
+      # чтобы при прямом переходе по ссылкам (например, /contacts) не было ошибки 404 от GitHub Pages
+      - name: Copy index.html to 404.html
+        run: cp ./release/wwwroot/index.html ./release/wwwroot/404.html
+
+      # АВТОМАТИЧЕСКАЯ ГЕНЕРАЦИЯ SITEMAP (SEO)
+      # Этот шаг просканирует все ваши отрендеренные HTML-страницы и сам создаст идеальный sitemap.xml
+      - name: Generate Sitemap
+        uses: cicirello/generate-sitemap@v1
+        with:
+          base-url-path: https://lasershowvitebsk.github.io/
+          path-to-root: ./release/wwwroot
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./release/wwwroot
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

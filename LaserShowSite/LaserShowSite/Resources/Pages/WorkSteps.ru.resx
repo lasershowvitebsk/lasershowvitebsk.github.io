@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+
+	<data name="PageTitle" xml:space="preserve">
+    <value>Как мы работаем</value>
+  </data>
+	<data name="Intro" xml:space="preserve">
+    <value>Простой и понятный процесс: от вашей заявки до яркого лазерного шоу на мероприятии.</value>
+  </data>
+
+	<data name="Step1Title" xml:space="preserve">
+    <value>Заявка</value>
+  </data>
+	<data name="Step1Text" xml:space="preserve">
+    <value>Вы оставляете заявку на сайте, пишете в мессенджер или звоните нам. Мы получаем базовую информацию о вашем мероприятии.</value>
+  </data>
+
+	<data name="Step2Title" xml:space="preserve">
+    <value>Обсуждение деталей</value>
+  </data>
+	<data name="Step2Text" xml:space="preserve">
+    <value>Уточняем дату, площадку, формат события, количество гостей, помещение или улицу, а также ваши основные пожелания.</value>
+  </data>
+
+	<data name="Step3Title" xml:space="preserve">
+    <value>Выбор формата шоу</value>
+  </data>
+	<data name="Step3Text" xml:space="preserve">
+    <value>Вместе выбираем подходящий формат: анимационное шоу, лучевое шоу, комбинированное шоу, готовый сюжет или индивидуальный сценарий.</value>
+  </data>
+
+	<data name="Step4Title" xml:space="preserve">
+    <value>Сюжет и музыка</value>
+  </data>
+	<data name="Step4Text" xml:space="preserve">
+    <value>Согласуем видеосюжет, музыку, имена, дату, логотип, поздравительный текст и другие персональные элементы.</value>
+  </data>
+
+	<data name="Step5Title" xml:space="preserve">
+    <value>Расчёт стоимости</value>
+  </data>
+	<data name="Step5Text" xml:space="preserve">
+    <value>Рассчитываем итоговую стоимость с учётом типа шоу, длительности, сложности, места проведения и дополнительного оборудования при необходимости.</value>
+  </data>
+
+	<data name="Step6Title" xml:space="preserve">
+    <value>Договор и аванс</value>
+  </data>
+	<data name="Step6Text" xml:space="preserve">
+    <value>После согласования всех деталей заключаем договор, фиксируем дату мероприятия и принимаем аванс.</value>
+  </data>
+
+	<data name="Step7Title" xml:space="preserve">
+    <value>Подготовка шоу</value>
+  </data>
+	<data name="Step7Text" xml:space="preserve">
+    <value>Наша команда готовит графику, адаптирует выбранный сюжет, добавляет персональные элементы и проверяет техническую часть.</value>
+  </data>
+
+	<data name="Step8Title" xml:space="preserve">
+    <value>Монтаж на площадке</value>
+  </data>
+	<data name="Step8Text" xml:space="preserve">
+    <value>В день мероприятия приезжаем заранее, устанавливаем оборудование, проверяем проекцию и готовим всё к запуску шоу.</value>
+  </data>
+
+	<data name="Step9Title" xml:space="preserve">
+    <value>Проведение и расчёт</value>
+  </data>
+	<data name="Step9Text" xml:space="preserve">
+    <value>Запускаем лазерное шоу в согласованное время. Остаток оплаты вносится в день мероприятия, если не согласованы другие условия.</value>
+  </data>
+
+	<data name="NeedTitle" xml:space="preserve">
+    <value>Что желательно подготовить</value>
+  </data>
+	<data name="NeedItem1" xml:space="preserve">
+    <value>Дату и примерное время мероприятия</value>
+  </data>
+	<data name="NeedItem2" xml:space="preserve">
+    <value>Город и площадку проведения</value>
+  </data>
+	<data name="NeedItem3" xml:space="preserve">
+    <value>Формат события и примерное количество гостей</value>
+  </data>
+	<data name="NeedItem4" xml:space="preserve">
+    <value>Помещение или улицу, наличие экрана, фасада или поверхности для проекции</value>
+  </data>
+	<data name="NeedItem5" xml:space="preserve">
+    <value>Желаемую длительность, музыку и персональные элементы</value>
+  </data>
+
+	<data name="PaymentTitle" xml:space="preserve">
+    <value>Договор и оплата</value>
+  </data>
+	<data name="PaymentText" xml:space="preserve">
+    <value>Дата бронируется после согласования деталей и внесения аванса. Оставшаяся сумма обычно оплачивается в день проведения мероприятия. Точные условия оплаты согласуются индивидуально и могут быть зафиксированы в договоре.</value>
+  </data>
+
+	<data name="CtaTitle" xml:space="preserve">
+    <value>Готовы обсудить ваше мероприятие?</value>
+  </data>
+	<data name="CtaText" xml:space="preserve">
+    <value>Оставьте заявку или рассчитайте примерную стоимость. Мы свяжемся с вами и предложим оптимальный формат лазерного шоу.</value>
+  </data>
+	<data name="CtaRequest" xml:space="preserve">
+    <value>Оставить заявку</value>
+  </data>
+	<data name="CtaCalculator" xml:space="preserve">
+    <value>Рассчитать стоимость</value>
+  </data>
+</root>

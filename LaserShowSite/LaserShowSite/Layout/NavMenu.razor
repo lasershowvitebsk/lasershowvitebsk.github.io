@@ -1,0 +1,114 @@
+﻿@using Microsoft.AspNetCore.Components.Routing
+@inject IStringLocalizer<NavMenu> L
+@inject IJSRuntime JsRuntime
+
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container-fluid">
+        <button class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarNav"
+                aria-controls="navbarNav"
+                aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto align-items-lg-center">
+                <li class="nav-item">
+                    <NavLink class="nav-link"
+                             href="/"
+                             Match="NavLinkMatch.All"
+                             @onclick="CloseMenu">
+                        @L["Home"]
+                    </NavLink>
+                </li>
+
+                <li class="nav-item">
+                    <NavLink class="nav-link"
+                             href="/services"
+                             @onclick="CloseMenu">
+                        @L["ServicesAndPrices"]
+                    </NavLink>
+                </li>
+
+                <li class="nav-item">
+                    <NavLink class="nav-link"
+                             href="/stories"
+                             @onclick="CloseMenu">
+                        @L["Stories"]
+                    </NavLink>
+                </li>
+
+                <li class="nav-item">
+                    <NavLink class="nav-link"
+                             href="/calculator"
+                             @onclick="CloseMenu">
+                        @L["Calculator"]
+                    </NavLink>
+                </li>
+
+                <li class="nav-item">
+                    <NavLink class="nav-link"
+                             href="/work-steps"
+                             @onclick="CloseMenu">
+                        @L["WorkSteps"]
+                    </NavLink>
+                </li>
+
+                <li class="nav-item">
+                    <NavLink class="nav-link"
+                             href="/faq"
+                             @onclick="CloseMenu">
+                        @L["FAQ"]
+                    </NavLink>
+                </li>
+
+                <li class="nav-item">
+                    <NavLink class="nav-link"
+                             href="/contacts"
+                             @onclick="CloseMenu">
+                        @L["Contacts"]
+                    </NavLink>
+                </li>
+
+                <li class="nav-item">
+                    <NavLink class="nav-link nav-cta"
+                             href="/request"
+                             @onclick="CloseMenu">
+                        @L["Request"]
+                    </NavLink>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+@code {
+    private async Task CloseMenu()
+    {
+        var isCollapsed = await JsRuntime.InvokeAsync<bool>(
+            "eval",
+            "document.getElementById('navbarNav')?.classList.contains('show') === true"
+        );
+
+        if (isCollapsed)
+        {
+            await JsRuntime.InvokeVoidAsync(
+                "eval",
+                "document.getElementById('navbarNav')?.classList.remove('show')"
+            );
+
+            await JsRuntime.InvokeVoidAsync(
+                "eval",
+                "document.querySelector('.navbar-toggler')?.classList.add('collapsed')"
+            );
+
+            await JsRuntime.InvokeVoidAsync(
+                "eval",
+                "document.querySelector('.navbar-toggler')?.setAttribute('aria-expanded', 'false')"
+            );
+        }
+    }
+}

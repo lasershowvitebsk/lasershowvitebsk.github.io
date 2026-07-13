@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+
+	<data name="PageTitle" xml:space="preserve">
+    <value>How We Work</value>
+  </data>
+	<data name="Intro" xml:space="preserve">
+    <value>A clear step-by-step process from your request to a bright laser show at your event.</value>
+  </data>
+
+	<data name="Step1Title" xml:space="preserve">
+    <value>Request</value>
+  </data>
+	<data name="Step1Text" xml:space="preserve">
+    <value>You leave a request on the website, contact us in a messenger or call us. We receive the basic information about your event.</value>
+  </data>
+
+	<data name="Step2Title" xml:space="preserve">
+    <value>Details discussion</value>
+  </data>
+	<data name="Step2Text" xml:space="preserve">
+    <value>We clarify the date, venue, event format, number of guests, indoor or outdoor conditions and your main wishes.</value>
+  </data>
+
+	<data name="Step3Title" xml:space="preserve">
+    <value>Show format selection</value>
+  </data>
+	<data name="Step3Text" xml:space="preserve">
+    <value>Together we choose the best format: animation show, beam show, combined show, ready-made story or custom scenario.</value>
+  </data>
+
+	<data name="Step4Title" xml:space="preserve">
+    <value>Story and music</value>
+  </data>
+	<data name="Step4Text" xml:space="preserve">
+    <value>We agree on the video story, music, names, date, logo, congratulation text and other personal elements.</value>
+  </data>
+
+	<data name="Step5Title" xml:space="preserve">
+    <value>Price calculation</value>
+  </data>
+	<data name="Step5Text" xml:space="preserve">
+    <value>We calculate the final cost based on the show type, duration, complexity, location and additional equipment if needed.</value>
+  </data>
+
+	<data name="Step6Title" xml:space="preserve">
+    <value>Agreement and advance payment</value>
+  </data>
+	<data name="Step6Text" xml:space="preserve">
+    <value>After all details are approved, we sign an agreement, fix the event date and receive an advance payment.</value>
+  </data>
+
+	<data name="Step7Title" xml:space="preserve">
+    <value>Show preparation</value>
+  </data>
+	<data name="Step7Text" xml:space="preserve">
+    <value>Our team prepares graphics, adapts the selected story, adds personal elements and checks the technical part.</value>
+  </data>
+
+	<data name="Step8Title" xml:space="preserve">
+    <value>Setup at the venue</value>
+  </data>
+	<data name="Step8Text" xml:space="preserve">
+    <value>On the event day we arrive in advance, install the equipment, check the projection and prepare everything for the show.</value>
+  </data>
+
+	<data name="Step9Title" xml:space="preserve">
+    <value>Show and final payment</value>
+  </data>
+	<data name="Step9Text" xml:space="preserve">
+    <value>We run the laser show at the agreed time. The remaining payment is made on the event day unless otherwise agreed.</value>
+  </data>
+
+	<data name="NeedTitle" xml:space="preserve">
+    <value>What is useful to prepare</value>
+  </data>
+	<data name="NeedItem1" xml:space="preserve">
+    <value>Event date and approximate time</value>
+  </data>
+	<data name="NeedItem2" xml:space="preserve">
+    <value>City and venue</value>
+  </data>
+	<data name="NeedItem3" xml:space="preserve">
+    <value>Event format and approximate number of guests</value>
+  </data>
+	<data name="NeedItem4" xml:space="preserve">
+    <value>Indoor or outdoor location, screen, facade or projection surface</value>
+  </data>
+	<data name="NeedItem5" xml:space="preserve">
+    <value>Desired duration, music and personal elements</value>
+  </data>
+
+	<data name="PaymentTitle" xml:space="preserve">
+    <value>Agreement and payment</value>
+  </data>
+	<data name="PaymentText" xml:space="preserve">
+    <value>The event date is booked after the details are approved and an advance payment is made. The remaining amount is usually paid on the event day. Exact payment terms are agreed individually and can be fixed in the agreement.</value>
+  </data>
+
+	<data name="CtaTitle" xml:space="preserve">
+    <value>Ready to discuss your event?</value>
+  </data>
+	<data name="CtaText" xml:space="preserve">
+    <value>Leave a request or calculate an approximate price. We will contact you and suggest the best laser show format.</value>
+  </data>
+	<data name="CtaRequest" xml:space="preserve">
+    <value>Leave a request</value>
+  </data>
+	<data name="CtaCalculator" xml:space="preserve">
+    <value>Calculate price</value>
+  </data>
+</root>
