@@ -4,7 +4,8 @@
 		<TargetFramework>net10.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<OverrideHtmlAssetPlaceholders>true</OverrideHtmlAssetPlaceholders>
+		<OverrideHtmlAssetPlaceholders>false</OverrideHtmlAssetPlaceholders>
+		<StaticWebAssetFingerprintingEnabled>false</StaticWebAssetFingerprintingEnabled>
 		<BlazorWebAssemblyLoadAllGlobalizationData>true</BlazorWebAssemblyLoadAllGlobalizationData>
 	</PropertyGroup>
 
@@ -19,132 +20,132 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Update="Resources\Layout\ChatWidget.Designer.cs">
-	    <DesignTime>True</DesignTime>
-	    <AutoGen>True</AutoGen>
-	    <DependentUpon>ChatWidget.resx</DependentUpon>
-	  </Compile>
-	  <Compile Update="Resources\Layout\NavMenu.Designer.cs">
-	    <DesignTime>True</DesignTime>
-	    <AutoGen>True</AutoGen>
-	    <DependentUpon>NavMenu.resx</DependentUpon>
-	  </Compile>
-	  <Compile Update="Resources\Models\RequestModel.Designer.cs">
-	    <DesignTime>True</DesignTime>
-	    <AutoGen>True</AutoGen>
-	    <DependentUpon>RequestModel.resx</DependentUpon>
-	  </Compile>
-	  <Compile Update="Resources\Pages\Calculator.Designer.cs">
-	    <DesignTime>True</DesignTime>
-	    <AutoGen>True</AutoGen>
-	    <DependentUpon>Calculator.resx</DependentUpon>
-	  </Compile>
-	  <Compile Update="Resources\Pages\Contacts.Designer.cs">
-	    <DesignTime>True</DesignTime>
-	    <AutoGen>True</AutoGen>
-	    <DependentUpon>Contacts.resx</DependentUpon>
-	  </Compile>
-	  <Compile Update="Resources\Pages\FAQ.Designer.cs">
-	    <DesignTime>True</DesignTime>
-	    <AutoGen>True</AutoGen>
-	    <DependentUpon>FAQ.resx</DependentUpon>
-	  </Compile>
-	  <Compile Update="Resources\Pages\Home.Designer.cs">
-	    <DesignTime>True</DesignTime>
-	    <AutoGen>True</AutoGen>
-	    <DependentUpon>Home.resx</DependentUpon>
-	  </Compile>
-	  <Compile Update="Resources\Pages\Request.Designer.cs">
-	    <DesignTime>True</DesignTime>
-	    <AutoGen>True</AutoGen>
-	    <DependentUpon>Request.resx</DependentUpon>
-	  </Compile>
-	  <Compile Update="Resources\Pages\ServicesAndPrices.Designer.cs">
-	    <DesignTime>True</DesignTime>
-	    <AutoGen>True</AutoGen>
-	    <DependentUpon>ServicesAndPrices.resx</DependentUpon>
-	  </Compile>
-	  <Compile Update="Resources\Pages\Stories.Designer.cs">
-	    <DesignTime>True</DesignTime>
-	    <AutoGen>True</AutoGen>
-	    <DependentUpon>Stories.resx</DependentUpon>
-	  </Compile>
-	  <Compile Update="Resources\Pages\WorkSteps.Designer.cs">
-	    <DesignTime>True</DesignTime>
-	    <AutoGen>True</AutoGen>
-	    <DependentUpon>WorkSteps.resx</DependentUpon>
-	  </Compile>
+		<Compile Update="Resources\Layout\ChatWidget.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>ChatWidget.resx</DependentUpon>
+		</Compile>
+		<Compile Update="Resources\Layout\NavMenu.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>NavMenu.resx</DependentUpon>
+		</Compile>
+		<Compile Update="Resources\Models\RequestModel.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>RequestModel.resx</DependentUpon>
+		</Compile>
+		<Compile Update="Resources\Pages\Calculator.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Calculator.resx</DependentUpon>
+		</Compile>
+		<Compile Update="Resources\Pages\Contacts.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Contacts.resx</DependentUpon>
+		</Compile>
+		<Compile Update="Resources\Pages\FAQ.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>FAQ.resx</DependentUpon>
+		</Compile>
+		<Compile Update="Resources\Pages\Home.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Home.resx</DependentUpon>
+		</Compile>
+		<Compile Update="Resources\Pages\Request.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Request.resx</DependentUpon>
+		</Compile>
+		<Compile Update="Resources\Pages\ServicesAndPrices.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>ServicesAndPrices.resx</DependentUpon>
+		</Compile>
+		<Compile Update="Resources\Pages\Stories.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Stories.resx</DependentUpon>
+		</Compile>
+		<Compile Update="Resources\Pages\WorkSteps.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>WorkSteps.resx</DependentUpon>
+		</Compile>
 	</ItemGroup>
 
 	<ItemGroup>
-	  <EmbeddedResource Update="Resources\Layout\ChatWidget.resx">
-	    <Generator>PublicResXFileCodeGenerator</Generator>
-	    <LastGenOutput>ChatWidget.Designer.cs</LastGenOutput>
-	  </EmbeddedResource>
-	  <EmbeddedResource Update="Resources\Layout\NavMenu.resx">
-	    <Generator>PublicResXFileCodeGenerator</Generator>
-	    <LastGenOutput>NavMenu.Designer.cs</LastGenOutput>
-	  </EmbeddedResource>
-	  <EmbeddedResource Update="Resources\Models\RequestModel.resx">
-	    <Generator>PublicResXFileCodeGenerator</Generator>
-	    <LastGenOutput>RequestModel.Designer.cs</LastGenOutput>
-	  </EmbeddedResource>
-	  <EmbeddedResource Update="Resources\Models\RequestModel.ru.resx">
-	    <Generator></Generator>
-	  </EmbeddedResource>
-	  <EmbeddedResource Update="Resources\Pages\Calculator.resx">
-	    <Generator>PublicResXFileCodeGenerator</Generator>
-	    <LastGenOutput>Calculator.Designer.cs</LastGenOutput>
-	  </EmbeddedResource>
-	  <EmbeddedResource Update="Resources\Pages\Calculator.ru.resx">
-	    <Generator>PublicResXFileCodeGenerator</Generator>
-	  </EmbeddedResource>
-	  <EmbeddedResource Update="Resources\Layout\ChatWidget.ru.resx">
-	    <Generator>PublicResXFileCodeGenerator</Generator>
-	  </EmbeddedResource>
-	  <EmbeddedResource Update="Resources\Pages\Contacts.resx">
-	    <Generator>PublicResXFileCodeGenerator</Generator>
-	    <LastGenOutput>Contacts.Designer.cs</LastGenOutput>
-	  </EmbeddedResource>
-	  <EmbeddedResource Update="Resources\Pages\FAQ.resx">
-	    <Generator>PublicResXFileCodeGenerator</Generator>
-	    <LastGenOutput>FAQ.Designer.cs</LastGenOutput>
-	  </EmbeddedResource>
-	  <EmbeddedResource Update="Resources\Pages\FAQ.ru.resx">
-	    <Generator>PublicResXFileCodeGenerator</Generator>
-	  </EmbeddedResource>
-	  <EmbeddedResource Update="Resources\Pages\Home.resx">
-	    <Generator>PublicResXFileCodeGenerator</Generator>
-	    <LastGenOutput>Home.Designer.cs</LastGenOutput>
-	  </EmbeddedResource>
-	  <EmbeddedResource Update="Resources\Pages\Home.ru.resx">
-	    <Generator>PublicResXFileCodeGenerator</Generator>
-	  </EmbeddedResource>
-	  <EmbeddedResource Update="Resources\Layout\NavMenu.ru.resx">
-	    <Generator>PublicResXFileCodeGenerator</Generator>
-	  </EmbeddedResource>
-	  <EmbeddedResource Update="Resources\Pages\Request.resx">
-	    <Generator>PublicResXFileCodeGenerator</Generator>
-	    <LastGenOutput>Request.Designer.cs</LastGenOutput>
-	  </EmbeddedResource>
-	  <EmbeddedResource Update="Resources\Pages\Request.ru.resx">
-	    <Generator>PublicResXFileCodeGenerator</Generator>
-	  </EmbeddedResource>
-	  <EmbeddedResource Update="Resources\Pages\ServicesAndPrices.resx">
-	    <Generator>PublicResXFileCodeGenerator</Generator>
-	    <LastGenOutput>ServicesAndPrices.Designer.cs</LastGenOutput>
-	  </EmbeddedResource>
-	  <EmbeddedResource Update="Resources\Pages\ServicesAndPrices.ru.resx">
-	    <Generator></Generator>
-	  </EmbeddedResource>
-	  <EmbeddedResource Update="Resources\Pages\Stories.resx">
-	    <Generator>PublicResXFileCodeGenerator</Generator>
-	    <LastGenOutput>Stories.Designer.cs</LastGenOutput>
-	  </EmbeddedResource>
-	  <EmbeddedResource Update="Resources\Pages\WorkSteps.resx">
-	    <Generator>PublicResXFileCodeGenerator</Generator>
-	    <LastGenOutput>WorkSteps.Designer.cs</LastGenOutput>
-	  </EmbeddedResource>
+		<EmbeddedResource Update="Resources\Layout\ChatWidget.resx">
+			<Generator>PublicResXFileCodeGenerator</Generator>
+			<LastGenOutput>ChatWidget.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Resources\Layout\NavMenu.resx">
+			<Generator>PublicResXFileCodeGenerator</Generator>
+			<LastGenOutput>NavMenu.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Resources\Models\RequestModel.resx">
+			<Generator>PublicResXFileCodeGenerator</Generator>
+			<LastGenOutput>RequestModel.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Resources\Models\RequestModel.ru.resx">
+			<Generator></Generator>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Resources\Pages\Calculator.resx">
+			<Generator>PublicResXFileCodeGenerator</Generator>
+			<LastGenOutput>Calculator.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Resources\Pages\Calculator.ru.resx">
+			<Generator>PublicResXFileCodeGenerator</Generator>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Resources\Layout\ChatWidget.ru.resx">
+			<Generator>PublicResXFileCodeGenerator</Generator>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Resources\Pages\Contacts.resx">
+			<Generator>PublicResXFileCodeGenerator</Generator>
+			<LastGenOutput>Contacts.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Resources\Pages\FAQ.resx">
+			<Generator>PublicResXFileCodeGenerator</Generator>
+			<LastGenOutput>FAQ.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Resources\Pages\FAQ.ru.resx">
+			<Generator>PublicResXFileCodeGenerator</Generator>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Resources\Pages\Home.resx">
+			<Generator>PublicResXFileCodeGenerator</Generator>
+			<LastGenOutput>Home.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Resources\Pages\Home.ru.resx">
+			<Generator>PublicResXFileCodeGenerator</Generator>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Resources\Layout\NavMenu.ru.resx">
+			<Generator>PublicResXFileCodeGenerator</Generator>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Resources\Pages\Request.resx">
+			<Generator>PublicResXFileCodeGenerator</Generator>
+			<LastGenOutput>Request.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Resources\Pages\Request.ru.resx">
+			<Generator>PublicResXFileCodeGenerator</Generator>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Resources\Pages\ServicesAndPrices.resx">
+			<Generator>PublicResXFileCodeGenerator</Generator>
+			<LastGenOutput>ServicesAndPrices.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Resources\Pages\ServicesAndPrices.ru.resx">
+			<Generator></Generator>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Resources\Pages\Stories.resx">
+			<Generator>PublicResXFileCodeGenerator</Generator>
+			<LastGenOutput>Stories.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Resources\Pages\WorkSteps.resx">
+			<Generator>PublicResXFileCodeGenerator</Generator>
+			<LastGenOutput>WorkSteps.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
 	</ItemGroup>
 
 </Project>
