@@ -126,6 +126,9 @@
   <data name="Subtitle" xml:space="preserve">
     <value>We are always online! Choose any convenient way to consult, calculate costs, or book a show:</value>
   </data>
+  <data name="Telegram" xml:space="preserve">
+    <value>Telegram Bot (24/7 online)</value>
+  </data>
   <data name="Title" xml:space="preserve">
     <value>Contact Us</value>
   </data>

@@ -977,6 +977,15 @@ body {
         box-shadow: 0 8px 25px rgba(37, 211, 102, 0.5);
     }
 
+.btn-telegram {
+    background: #229ED9;
+    box-shadow: 0 4px 15px rgba(34, 158, 217, 0.3);
+}
+
+    .btn-telegram:hover {
+        box-shadow: 0 8px 25px rgba(34, 158, 217, 0.5);
+    }
+
 .contact-card .border-top {
     border-color: rgba(255, 255, 255, 0.12) !important;
 }
