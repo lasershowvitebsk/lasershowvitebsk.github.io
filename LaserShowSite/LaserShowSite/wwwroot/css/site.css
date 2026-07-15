@@ -565,7 +565,7 @@ body {
     position: absolute;
     right: calc(var(--site-edge-gutter) * 4);
     bottom: 80px;
-    width: 350px;
+    width: 360px;
     max-height: 500px;
     background: var(--color-panel);
     border-radius: 16px;
@@ -609,7 +609,7 @@ body {
 }
 
     .chat-widget .chat-messages .message {
-        max-width: 95%;
+        max-width: 98%;
         padding: 8px 14px;
         border-radius: 16px;
         font-size: 0.9rem;
