@@ -38,6 +38,8 @@
     --byn-calc-top: 1.0px;
     --byn-services-height: 0.75em;
     --byn-services-top: -2.0px;
+    /* Единый отступ сверху перед CTA-кнопками (Заказать/Рассчитать/Отправить) */
+    --cta-gap-top: 2rem;
     /* Цветовая палитра */
     --color-bg: #0a0a0f;
     --color-panel: #1a1a2e;
@@ -607,7 +609,7 @@ body {
 }
 
     .chat-widget .chat-messages .message {
-        max-width: 85%;
+        max-width: 95%;
         padding: 8px 14px;
         border-radius: 16px;
         font-size: 0.9rem;
@@ -660,6 +662,48 @@ body {
         display: flex;
         align-items: center;
         justify-content: center;
+    }
+
+/* Чипсы быстрых вопросов */
+.chat-chips {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* ← две колонки */
+    gap: 6px;
+    padding: 8px 10px;
+    border-top: var(--border-dark);
+    background: var(--color-panel-dark);
+}
+
+.chip {
+    padding: 5px 8px;
+    border-radius: 16px;
+    border: 1px solid rgba(13, 110, 253, 0.4);
+    background: rgba(13, 110, 253, 0.1);
+    color: #aaa;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    text-align: center; /* ← по центру */
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+    .chip:hover {
+        background: rgba(13, 110, 253, 0.3);
+        border-color: rgba(13, 110, 253, 0.7);
+        color: #fff;
+        transform: translateY(-1px);
+    }
+
+    .chip:active {
+        transform: translateY(0);
+    }
+
+    .chip:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        transform: none;
     }
 
 
@@ -1026,10 +1070,39 @@ body {
 }
 
 .btn-submit:disabled {
-    opacity: 0.45;
+    opacity: 0.35;
     cursor: not-allowed;
     box-shadow: none !important;
     transform: none !important;
+    background-color: #444 !important;
+    border-color: #444 !important;
+}
+
+/* =========================================================================
+   17.1 ЕДИНЫЙ СТИЛЬ CTA-КНОПОК (Заказать / Рассчитать / Отправить)
+
+   ВАЖНО: чтобы отступ был идентичным на всех страницах независимо
+   от того, что стоит перед кнопкой (alert, textarea, карточки и т.д.),
+   в разметке .razor у элемента ПЕРЕД кнопкой всегда должен стоять
+   класс "mb-0" (сброс встроенного Bootstrap margin-bottom).
+   Сам отступ считается ТОЛЬКО через padding-top ниже — margin-top
+   всегда обнулён, чтобы не зависеть от margin-collapse соседей.
+========================================================================= */
+.btn-primary.px-5.py-2,
+.work-steps-cta .btn-lg,
+.btn-submit {
+    padding: 12px 40px !important;
+    font-size: 1.05rem !important;
+    font-weight: 600;
+    border-radius: 8px;
+    min-width: 220px;
+}
+
+.calculator-page .text-center.mt-4,
+.request-page .text-center.mt-4,
+.services-page .text-center.mt-4 {
+    margin-top: 0 !important;
+    padding-top: var(--cta-gap-top) !important;
 }
 
 
@@ -1391,6 +1464,13 @@ body {
         bottom: calc(var(--site-edge-gutter) * 6); /* Слегка приподнимаем от края сетки */
         left: calc(var(--site-edge-gutter) * 6); /* Сдвигаем вбок соразмерно сетке */
     }
+
+    /* Единый отступ перед CTA-кнопками — немного компактнее на планшетах */
+    .calculator-page .text-center.mt-4,
+    .request-page .text-center.mt-4,
+    .services-page .text-center.mt-4 {
+        padding-top: 1.75rem !important;
+    }
 }
 
 
@@ -1588,5 +1668,20 @@ body {
         background-color: rgba(26, 26, 46, 0.95);
         border-width: 1.5px;
         box-shadow: 0 4px 12px rgba(0, 255, 255, 0.25);
+    }
+
+    /* Единый отступ перед CTA-кнопками — компактнее на мобильных */
+    .calculator-page .text-center.mt-4,
+    .request-page .text-center.mt-4,
+    .services-page .text-center.mt-4 {
+        padding-top: 1.5rem !important;
+    }
+
+    .btn-primary.px-5.py-2,
+    .work-steps-cta .btn-lg,
+    .btn-submit {
+        min-width: 0;
+        width: 100%;
+        padding: 12px 24px !important;
     }
 }

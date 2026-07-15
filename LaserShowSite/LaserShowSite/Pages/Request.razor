@@ -126,9 +126,8 @@
                         <ValidationMessage For="@(() => requestModel.Guests)" class="text-danger mt-1" />
                     </div>
 
-                    <div class="mb-3">
+                    <div class="mb-0">
                         <label for="details-input" class="form-label required-label">@L["Details"]</label>
-
                         <InputTextArea id="details-input"
                                        @bind-Value="requestModel.Details"
                                        @oninput="OnDetailsInput"
@@ -137,7 +136,6 @@
                                        rows="4"
                                        required
                                        placeholder="@L["DetailsPlaceholder"]" />
-
                         <ValidationMessage For="@(() => requestModel.Details)" class="text-danger mt-1" />
                     </div>
 

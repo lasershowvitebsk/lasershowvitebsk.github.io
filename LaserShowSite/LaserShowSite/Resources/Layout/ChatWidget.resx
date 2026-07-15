@@ -120,6 +120,18 @@
   <data name="Bot" xml:space="preserve">
     <value>Bot</value>
   </data>
+  <data name="ChipContacts" xml:space="preserve">
+    <value>Contacts</value>
+  </data>
+  <data name="ChipOrder" xml:space="preserve">
+    <value>Order</value>
+  </data>
+  <data name="ChipPrices" xml:space="preserve">
+    <value>Prices</value>
+  </data>
+  <data name="ChipStories" xml:space="preserve">
+    <value>Stories</value>
+  </data>
   <data name="Error" xml:space="preserve">
     <value>Error</value>
   </data>

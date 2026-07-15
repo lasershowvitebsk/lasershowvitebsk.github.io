@@ -5,26 +5,25 @@
 <h2 class="neon-title page-title text-center">@L["Title"]</h2>
 <div class="container mb-5 services-page">
     <div class="row justify-content-center">
-        @foreach (var service in services)
+        @for (int i = 0; i < services.Count; i++)
         {
-            <div class="col-md-4 mb-4">
+            var service = services[i];
+            var isLast = i == services.Count - 1;
+
+            <div class="col-md-4 @(isLast ? "mb-md-0" : "mb-4 mb-md-0")">
                 <div class="card service-card h-100 d-flex flex-column justify-content-between">
                     <div class="card-body">
-                        <!-- Центрируем только заголовок услуги -->
                         <h4 class="card-title neon-title text-center mb-4" style="font-size: 1.5rem;">
                             @service.Name
                         </h4>
-                        <!-- Текст описания делаем выровненным по левому краю для удобства чтения -->
                         <p class="card-text">
                             @service.Desc
                         </p>
                     </div>
-                    <!-- Стильный неоновый ценник -->
                     <div class="card-footer bg-transparent border-0 pt-0 pb-4 px-4 text-center">
                         <span class="service-price">
                             @if (service.Price != null && service.Price.Contains("BYN") && CultureInfo.CurrentCulture.Name.StartsWith("ru"))
                             {
-                                <!-- Выводим картинку со специальным классом для услуг -->
                                 @service.Price.Replace("BYN", "").Trim()
                                 <img src="images/byn.svg" class="byn-icon-services" alt="BYN" />
                             }
@@ -37,12 +36,13 @@
                 </div>
             </div>
         }
-    </div>
-</div>
 
-<!-- Изящная кнопка заказа внизу страницы -->
-<div class="text-center mt-3 mb-5">
-    <a href="/request" class="btn btn-primary px-5 py-2">@L["BookButton"]</a>
+        <div class="col-12">
+            <div class="text-center mt-4">
+                <a href="/request" class="btn btn-primary px-5 py-2">@L["BookButton"]</a>
+            </div>
+        </div>
+    </div>
 </div>
 
 @code {

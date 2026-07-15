@@ -88,7 +88,7 @@ namespace LaserShowSite.Resources.Pages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Telegram Bot (24/7 online).
+        ///   Looks up a localized string similar to Telegram Bot (24/7).
         /// </summary>
         public static string Telegram {
             get {

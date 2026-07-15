@@ -1,12 +1,12 @@
 ﻿@using LaserShowSite.Services
 @using Microsoft.Extensions.Localization
 @using System.Text.RegularExpressions
+@using System.Globalization
 @inject ChatService ChatService
 @inject IJSRuntime JsRuntime
 @inject IStringLocalizer<ChatWidget> L
 
 <div class="chat-widget">
-    <!-- Кнопка-триггер -->
     <button class="chat-toggle" @onclick="ToggleChat">
         @if (isOpen)
         {
@@ -18,7 +18,6 @@
         }
     </button>
 
-    <!-- Окно чата (Локализованное) -->
     @if (isOpen)
     {
         <div class="chat-window">
@@ -26,23 +25,50 @@
                 <span>@L["Title"]</span>
                 <button class="chat-close" @onclick="ToggleChat">✕</button>
             </div>
+
             <div class="chat-messages" id="widgetMessages">
                 @foreach (var msg in messages)
                 {
                     <div class="message @(msg.IsUser ? "user" : "bot")">
                         <strong>@(msg.IsUser ? L["You"] : L["Bot"]):</strong>
-                        <!-- [ИЗМЕНЕНО] Выводим текст как MarkupString для поддержки кликабельных ссылок -->
                         <span>@((MarkupString)FormatMessage(msg.Text))</span>
                     </div>
                 }
             </div>
+
+            <!-- Чипсы — всегда видны, блокируются во время загрузки -->
+            <div class="chat-chips">
+                <button class="chip"
+                        disabled="@isLoading"
+                        @onclick='() => SendChip("prices")'>
+                    💰 @L["ChipPrices"]
+                </button>
+                <button class="chip"
+                        disabled="@isLoading"
+                        @onclick='() => SendChip("stories")'>
+                    🎬 @L["ChipStories"]
+                </button>
+                <button class="chip"
+                        disabled="@isLoading"
+                        @onclick='() => SendChip("order")'>
+                    📋 @L["ChipOrder"]
+                </button>
+                <button class="chip"
+                        disabled="@isLoading"
+                        @onclick='() => SendChip("contacts")'>
+                    📞 @L["ChipContacts"]
+                </button>
+            </div>
+
             <div class="chat-input">
                 <input @bind="userInput"
                        @bind:event="oninput"
                        placeholder="@L["Placeholder"]"
                        @onkeyup="OnKeyUp"
                        class="form-control form-control-sm" />
-                <button @onclick="SendMessage" class="btn btn-primary btn-sm" disabled="@isLoading">
+                <button @onclick="SendMessage"
+                        class="btn btn-primary btn-sm"
+                        disabled="@isLoading">
                     @(isLoading ? "..." : "➤")
                 </button>
             </div>
@@ -56,9 +82,13 @@
     private string userInput = "";
     private bool isLoading = false;
 
+    private string currentLanguage =>
+        CultureInfo.CurrentCulture.Name.StartsWith("ru", StringComparison.OrdinalIgnoreCase)
+            ? "ru"
+            : "en";
+
     protected override void OnInitialized()
     {
-        // Локализованное приветствие при первом запуске
         messages.Add(new ChatMessage { Text = L["Greeting"], IsUser = false });
     }
 
@@ -69,12 +99,12 @@
 
         if (isOpen)
         {
-            // Небольшая пауза, чтобы окно чата успело отрендериться в браузере перед прокруткой
             await Task.Delay(50);
             await ScrollToBottom();
         }
     }
 
+    // Обычная отправка текстового сообщения
     private async Task SendMessage()
     {
         if (string.IsNullOrWhiteSpace(userInput) || isLoading) return;
@@ -85,28 +115,71 @@
         isLoading = true;
         StateHasChanged();
 
-        await ScrollToBottom(); // Прокручиваем сразу после отправки пользователя
+        await ScrollToBottom();
 
         try
         {
-            var reply = await ChatService.GetBotReplyAsync(userMsg);
+            var reply = await ChatService.GetBotReplyAsync(userMsg, currentLanguage);
             messages.Add(new ChatMessage { Text = reply, IsUser = false });
         }
         catch (Exception ex)
         {
-            messages.Add(new ChatMessage { Text = $"{L["Error"]}: {ex.Message}", IsUser = false });
+            messages.Add(new ChatMessage
+            {
+                Text = $"{L["Error"]}: {ex.Message}",
+                IsUser = false
+            });
         }
         finally
         {
             isLoading = false;
             StateHasChanged();
-            await ScrollToBottom(); // Прокручиваем после ответа бота
+            await ScrollToBottom();
+        }
+    }
+
+    // Отправка через чипс — мгновенный ответ без LLM
+    private async Task SendChip(string chipId)
+    {
+        if (isLoading) return;
+
+        var label = chipId switch
+        {
+            "prices" => L["ChipPrices"].Value,
+            "stories" => L["ChipStories"].Value,
+            "order" => L["ChipOrder"].Value,
+            "contacts" => L["ChipContacts"].Value,
+            _ => chipId
+        };
+
+        messages.Add(new ChatMessage { Text = label, IsUser = true });
+        isLoading = true;
+        StateHasChanged();
+        await ScrollToBottom();
+
+        try
+        {
+            var reply = await ChatService.GetChipReplyAsync(chipId, currentLanguage);
+            messages.Add(new ChatMessage { Text = reply, IsUser = false });
+        }
+        catch (Exception ex)
+        {
+            messages.Add(new ChatMessage
+            {
+                Text = $"{L["Error"]}: {ex.Message}",
+                IsUser = false
+            });
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+            await ScrollToBottom();
         }
     }
 
     private async Task ScrollToBottom()
     {
-        // Даем Blazor 50 миллисекунд, чтобы полностью отрисовать новые сообщения в DOM
         await Task.Delay(50);
         await JsRuntime.InvokeVoidAsync("scrollToBottom", "widgetMessages");
     }
@@ -119,46 +192,56 @@
         }
     }
 
-    // [НОВОЕ] Вспомогательный метод для поиска и оборачивания ссылок
     private string FormatMessage(string? text)
     {
         if (string.IsNullOrWhiteSpace(text)) return string.Empty;
 
         try
         {
-            // 1. Безопасно экранируем исходный HTML-текст от XSS
             var escapedText = System.Web.HttpUtility.HtmlEncode(text);
 
-            // 2. [НОВОЕ] Преобразуем Markdown жирный шрифт **текст** в HTML-тег <strong>текст</strong>
-            // Нам нужно обработать это до ссылок, чтобы убрать звездочки из разметки
+            // **жирный** → <strong>
             var boldRegex = new Regex(@"\*\*([^*]+)\*\*", RegexOptions.Compiled);
             escapedText = boldRegex.Replace(escapedText, "<strong>$1</strong>");
 
-            // 3. Сначала парсим Markdown-ссылки вида: [Анкор](https://...)
-            var markdownLinkRegex = new Regex(@"\[([^\]]+)\]\((https?://[^\s)]+)\)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            // *жирный* → <strong>
+            var boldSingleRegex = new Regex(@"\*([^*\n]+)\*", RegexOptions.Compiled);
+            escapedText = boldSingleRegex.Replace(escapedText, "<strong>$1</strong>");
 
+            // [текст](url) → ссылка
+            var markdownLinkRegex = new Regex(
+                @"\[([^\]]+)\]\((https?://[^\s)]+)\)",
+                RegexOptions.Compiled | RegexOptions.IgnoreCase
+            );
             escapedText = markdownLinkRegex.Replace(escapedText, match =>
-                    {
-                        var linkText = match.Groups[1].Value;
-                        var url = System.Web.HttpUtility.HtmlDecode(match.Groups[2].Value);
-                        return $"<a href=\"{url}\" target=\"_blank\" style=\"color: #00e5ff; text-decoration: underline; font-weight: bold;\">{linkText}</a>";
-                    });
+            {
+                var linkText = match.Groups[1].Value;
+                var linkUrl = System.Web.HttpUtility.HtmlDecode(match.Groups[2].Value);
+                return $"<a href=\"{linkUrl}\" target=\"_blank\" " +
+                       $"style=\"color:#00e5ff;text-decoration:underline;font-weight:bold;\">" +
+                       $"{linkText}</a>";
+            });
 
-            // 4. Затем парсим оставшиеся голые ссылки (только те, которые еще НЕ обернуты в тег <a>)
-            // Исключаем попадание точки, запятой или скобок на конце ссылки, а также тегов <strong> вокруг
-            var bareUrlRegex = new Regex(@"(?<!href=\x22)(?<!\x3e)(https?://[^\s<]+?)(?=[.,!?]?(?:\s|$|<|<strong>|<\/strong>))", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-
+            // Голые URL → ссылка
+            var bareUrlRegex = new Regex(
+                @"(?<!href="")(?<!\x3e)(https?://[^\s<]+?)(?=[.,!?]?(?:\s|$|<))",
+                RegexOptions.Compiled | RegexOptions.IgnoreCase
+            );
             escapedText = bareUrlRegex.Replace(escapedText, match =>
-                    {
-                        var url = System.Web.HttpUtility.HtmlDecode(match.Value);
-                        return $"<a href=\"{url}\" target=\"_blank\" style=\"color: #00e5ff; text-decoration: underline; font-weight: bold;\">{url}</a>";
-                    });
+            {
+                var linkUrl = System.Web.HttpUtility.HtmlDecode(match.Value);
+                return $"<a href=\"{linkUrl}\" target=\"_blank\" " +
+                       $"style=\"color:#00e5ff;text-decoration:underline;font-weight:bold;\">" +
+                       $"{linkUrl}</a>";
+            });
+
+            // Переносы строк → <br>
+            escapedText = escapedText.Replace("\n", "<br>");
 
             return escapedText;
         }
         catch
         {
-            // Если произошла непредвиденная ошибка, возвращаем исходный текст, чтобы не сломать чат
             return text ?? string.Empty;
         }
     }

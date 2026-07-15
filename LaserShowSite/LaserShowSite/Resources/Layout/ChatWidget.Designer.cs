@@ -70,6 +70,42 @@ namespace LaserShowSite.Resources.Layout {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Contacts.
+        /// </summary>
+        public static string ChipContacts {
+            get {
+                return ResourceManager.GetString("ChipContacts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Order.
+        /// </summary>
+        public static string ChipOrder {
+            get {
+                return ResourceManager.GetString("ChipOrder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Prices.
+        /// </summary>
+        public static string ChipPrices {
+            get {
+                return ResourceManager.GetString("ChipPrices", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stories.
+        /// </summary>
+        public static string ChipStories {
+            get {
+                return ResourceManager.GetString("ChipStories", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error.
         /// </summary>
         public static string Error {
