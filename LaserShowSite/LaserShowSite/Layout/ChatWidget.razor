@@ -34,6 +34,15 @@
                         <span>@((MarkupString)FormatMessage(msg.Text))</span>
                     </div>
                 }
+
+                @if (isTyping)
+                {
+                    <div class="message bot typing-indicator">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                }
             </div>
 
             <!-- Чипсы — всегда видны, блокируются во время загрузки -->
@@ -81,6 +90,7 @@
     private List<ChatMessage> messages = new();
     private string userInput = "";
     private bool isLoading = false;
+    private bool isTyping = false;
 
     private string currentLanguage =>
         CultureInfo.CurrentCulture.Name.StartsWith("ru", StringComparison.OrdinalIgnoreCase)
@@ -109,18 +119,31 @@
     {
         if (string.IsNullOrWhiteSpace(userInput) || isLoading) return;
 
-        var userMsg = userInput;
-        messages.Add(new ChatMessage { Text = userMsg, IsUser = true });
+        var userMsg = userInput.Trim();
+
+        messages.Add(new ChatMessage
+        {
+            Text = userMsg,
+            IsUser = true
+        });
+
         userInput = "";
         isLoading = true;
-        StateHasChanged();
+        isTyping = true;
 
+        await InvokeAsync(StateHasChanged);
+        await Task.Yield();
         await ScrollToBottom();
 
         try
         {
             var reply = await ChatService.GetBotReplyAsync(userMsg, currentLanguage);
-            messages.Add(new ChatMessage { Text = reply, IsUser = false });
+
+            messages.Add(new ChatMessage
+            {
+                Text = reply,
+                IsUser = false
+            });
         }
         catch (Exception ex)
         {
@@ -132,8 +155,10 @@
         }
         finally
         {
+            isTyping = false;
             isLoading = false;
-            StateHasChanged();
+
+            await InvokeAsync(StateHasChanged);
             await ScrollToBottom();
         }
     }
@@ -152,15 +177,28 @@
             _ => chipId
         };
 
-        messages.Add(new ChatMessage { Text = label, IsUser = true });
+        messages.Add(new ChatMessage
+        {
+            Text = label,
+            IsUser = true
+        });
+
         isLoading = true;
-        StateHasChanged();
+        isTyping = true;
+
+        await InvokeAsync(StateHasChanged);
+        await Task.Yield();
         await ScrollToBottom();
 
         try
         {
             var reply = await ChatService.GetChipReplyAsync(chipId, currentLanguage);
-            messages.Add(new ChatMessage { Text = reply, IsUser = false });
+
+            messages.Add(new ChatMessage
+            {
+                Text = reply,
+                IsUser = false
+            });
         }
         catch (Exception ex)
         {
@@ -172,8 +210,10 @@
         }
         finally
         {
+            isTyping = false;
             isLoading = false;
-            StateHasChanged();
+
+            await InvokeAsync(StateHasChanged);
             await ScrollToBottom();
         }
     }
