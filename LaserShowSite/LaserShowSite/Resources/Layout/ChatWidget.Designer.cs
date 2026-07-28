@@ -160,6 +160,15 @@ namespace LaserShowSite.Resources.Layout {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Verification failed, try again.
+        /// </summary>
+        public static string VerificationFailed {
+            get {
+                return ResourceManager.GetString("VerificationFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You.
         /// </summary>
         public static string You {

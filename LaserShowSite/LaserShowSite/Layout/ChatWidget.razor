@@ -1,13 +1,21 @@
-﻿@using LaserShowSite.Services
-@using Microsoft.Extensions.Localization
+﻿@using System.Globalization
+@using System.Net
 @using System.Text.RegularExpressions
-@using System.Globalization
+@using LaserShowSite.Services
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.JSInterop
+
+@implements IDisposable
+
 @inject ChatService ChatService
 @inject IJSRuntime JsRuntime
-@inject IStringLocalizer<ChatWidget> L
 
 <div class="chat-widget">
-    <button class="chat-toggle" @onclick="ToggleChat">
+    <button class="chat-toggle"
+            type="button"
+            @onclick="ToggleChatAsync"
+            aria-label="@Text("Открыть чат", "Open chat")">
         @if (isOpen)
         {
             <span>✕</span>
@@ -22,16 +30,29 @@
     {
         <div class="chat-window">
             <div class="chat-header">
-                <span>@L["Title"]</span>
-                <button class="chat-close" @onclick="ToggleChat">✕</button>
+                <span>@Text("Чат с консультантом", "Chat with consultant")</span>
+
+                <button class="chat-close"
+                        type="button"
+                        @onclick="ToggleChatAsync"
+                        aria-label="@Text("Закрыть чат", "Close chat")">
+                    ✕
+                </button>
             </div>
 
             <div class="chat-messages" id="widgetMessages">
-                @foreach (var msg in messages)
+                @foreach (var message in messages)
                 {
-                    <div class="message @(msg.IsUser ? "user" : "bot")">
-                        <strong>@(msg.IsUser ? L["You"] : L["Bot"]):</strong>
-                        <span>@((MarkupString)FormatMessage(msg.Text))</span>
+                    <div class="message @(message.IsUser ? "user" : "bot")">
+                        <strong>
+                            @(message.IsUser
+                                ? Text("Вы", "You")
+                                : Text("Бот", "Bot")):
+                        </strong>
+
+                        <span class="chat-message-text">
+                            @((MarkupString)FormatMessage(message.Text))
+                        </span>
                     </div>
                 }
 
@@ -45,39 +66,87 @@
                 }
             </div>
 
-            <!-- Чипсы — всегда видны, блокируются во время загрузки -->
             <div class="chat-chips">
                 <button class="chip"
-                        disabled="@isLoading"
-                        @onclick='() => SendChip("prices")'>
-                    💰 @L["ChipPrices"]
+                        type="button"
+                        disabled="@InputDisabled"
+                        @onclick='() => SendChipAsync("prices")'>
+                    💰 @Text("Цены", "Prices")
                 </button>
+
                 <button class="chip"
-                        disabled="@isLoading"
-                        @onclick='() => SendChip("stories")'>
-                    🎬 @L["ChipStories"]
+                        type="button"
+                        disabled="@InputDisabled"
+                        @onclick='() => SendChipAsync("stories")'>
+                    🎬 @Text("Сюжеты", "Stories")
                 </button>
+
                 <button class="chip"
-                        disabled="@isLoading"
-                        @onclick='() => SendChip("order")'>
-                    📋 @L["ChipOrder"]
+                        type="button"
+                        disabled="@InputDisabled"
+                        @onclick='() => SendChipAsync("order")'>
+                    📋 @Text("Как заказать", "How to order")
                 </button>
+
                 <button class="chip"
-                        disabled="@isLoading"
-                        @onclick='() => SendChip("contacts")'>
-                    📞 @L["ChipContacts"]
+                        type="button"
+                        disabled="@InputDisabled"
+                        @onclick='() => SendChipAsync("contacts")'>
+                    📞 @Text("Контакты", "Contacts")
                 </button>
             </div>
 
+            <!--
+                Контейнер существует всё время, пока открыт чат.
+
+                После успешной Turnstile-проверки iframe не удаляется,
+                а только скрывается через display:none.
+            -->
+            <div class="chat-turnstile"
+                 style="display: @(needsVerification ? "block" : "none");">
+
+                <div id="turnstile-container"></div>
+
+                @if (verificationInProgress)
+                {
+                    <div class="small text-muted mt-2">
+                        @Text(
+                            "⏳ Проверка безопасности...",
+                            "⏳ Security verification..."
+                        )
+                    </div>
+                }
+
+                @if (!string.IsNullOrWhiteSpace(verificationError))
+                {
+                    <div class="small text-danger mt-2">
+                        @verificationError
+                    </div>
+
+                    <button class="btn btn-outline-light btn-sm mt-2"
+                            type="button"
+                            disabled="@verificationInProgress"
+                            @onclick="RetryTurnstileAsync">
+                        @Text(
+                            "Повторить проверку",
+                            "Retry verification"
+                        )
+                    </button>
+                }
+            </div>
+
             <div class="chat-input">
-                <input @bind="userInput"
+                <input class="form-control form-control-sm"
+                       @bind="userInput"
                        @bind:event="oninput"
-                       placeholder="@L["Placeholder"]"
-                       @onkeyup="OnKeyUp"
-                       class="form-control form-control-sm" />
-                <button @onclick="SendMessage"
-                        class="btn btn-primary btn-sm"
-                        disabled="@isLoading">
+                       @onkeyup="OnInputKeyUpAsync"
+                       disabled="@InputDisabled"
+                       placeholder="@Text("Спросите о ценах и услугах...", "Ask about prices and services...")" />
+
+                <button class="btn btn-primary btn-sm"
+                        type="button"
+                        disabled="@InputDisabled"
+                        @onclick="SendMessageAsync">
                     @(isLoading ? "..." : "➤")
                 </button>
             </div>
@@ -86,209 +155,748 @@
 </div>
 
 @code {
-    private bool isOpen = false;
-    private List<ChatMessage> messages = new();
-    private string userInput = "";
-    private bool isLoading = false;
-    private bool isTyping = false;
+    private bool isOpen;
+    private bool isLoading;
+    private bool isTyping;
 
-    private string currentLanguage =>
-        CultureInfo.CurrentCulture.Name.StartsWith("ru", StringComparison.OrdinalIgnoreCase)
-            ? "ru"
-            : "en";
+    private bool needsVerification;
+    private bool verificationInProgress;
+    private bool turnstileRenderRequested;
+
+    private bool disposed;
+
+    private int verificationVersion;
+
+    private string userInput = "";
+    private string? verificationError;
+
+    private DotNetObjectReference<ChatWidget>? dotnetReference;
+
+    private readonly List<ChatMessage> messages = new();
+
+    private PendingRequest? pendingRequest;
+
+    private bool InputDisabled =>
+        isLoading ||
+        needsVerification ||
+        verificationInProgress;
+
+    private bool IsRussian =>
+        CultureInfo.CurrentUICulture.TwoLetterISOLanguageName
+            .Equals("ru", StringComparison.OrdinalIgnoreCase);
+
+    private const string TurnstileSiteKey =
+        "0x4AAAAAAD--fk_8oEALAXiV";
+
+    private static readonly Regex MarkdownLinkRegex = new(
+        @"\[([^\]\r\n]+)\]\((https?://[^\s<>]+)\)",
+        RegexOptions.Compiled |
+        RegexOptions.IgnoreCase |
+        RegexOptions.CultureInvariant
+    );
+
+    private static readonly Regex BareUrlRegex = new(
+        @"https?://[^\s<]+",
+        RegexOptions.Compiled |
+        RegexOptions.IgnoreCase |
+        RegexOptions.CultureInvariant
+    );
+
+    private static readonly Regex BoldDoubleRegex = new(
+        @"\*\*([^*\r\n]+)\*\*",
+        RegexOptions.Compiled |
+        RegexOptions.CultureInvariant
+    );
+
+    private static readonly Regex BoldSingleRegex = new(
+        @"\*([^*\r\n]+)\*",
+        RegexOptions.Compiled |
+        RegexOptions.CultureInvariant
+    );
 
     protected override void OnInitialized()
     {
-        messages.Add(new ChatMessage { Text = L["Greeting"], IsUser = false });
+        messages.Add(new ChatMessage
+        {
+            IsUser = false,
+            Text = Text(
+                "Здравствуйте! Чем могу помочь?",
+                "Hello! How can I help?"
+            )
+        });
     }
 
-    private async Task ToggleChat()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        isOpen = !isOpen;
-        StateHasChanged();
+        if (
+            disposed ||
+            !isOpen ||
+            !needsVerification ||
+            verificationInProgress ||
+            !turnstileRenderRequested
+        )
+        {
+            return;
+        }
+
+        turnstileRenderRequested = false;
+
+        dotnetReference ??= DotNetObjectReference.Create(this);
+
+        try
+        {
+            await JsRuntime.InvokeVoidAsync(
+                "renderTurnstile",
+                "turnstile-container",
+                TurnstileSiteKey,
+                dotnetReference
+            );
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine(
+                $"[Turnstile] renderTurnstile invocation failed: {ex.Message}"
+            );
+
+            verificationError = Text(
+                "Не удалось запустить проверку безопасности.",
+                "Could not start security verification."
+            );
+
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task ToggleChatAsync()
+    {
+        if (disposed)
+        {
+            return;
+        }
 
         if (isOpen)
         {
-            await Task.Delay(50);
-            await ScrollToBottom();
-        }
-    }
-
-    // Обычная отправка текстового сообщения
-    private async Task SendMessage()
-    {
-        if (string.IsNullOrWhiteSpace(userInput) || isLoading) return;
-
-        var userMsg = userInput.Trim();
-
-        messages.Add(new ChatMessage
-        {
-            Text = userMsg,
-            IsUser = true
-        });
-
-        userInput = "";
-        isLoading = true;
-        isTyping = true;
-
-        await InvokeAsync(StateHasChanged);
-        await Task.Yield();
-        await ScrollToBottom();
-
-        try
-        {
-            var reply = await ChatService.GetBotReplyAsync(userMsg, currentLanguage);
-
-            messages.Add(new ChatMessage
+            try
             {
-                Text = reply,
-                IsUser = false
-            });
-        }
-        catch (Exception ex)
-        {
-            messages.Add(new ChatMessage
+                await JsRuntime.InvokeVoidAsync("removeTurnstile");
+            }
+            catch (Exception ex)
             {
-                Text = $"{L["Error"]}: {ex.Message}",
-                IsUser = false
-            });
-        }
-        finally
-        {
-            isTyping = false;
+                Console.WriteLine(
+                    $"[Turnstile] Ignore remove on chat close: {ex.Message}"
+                );
+            }
+
+            verificationVersion++;
+
+            isOpen = false;
             isLoading = false;
+            isTyping = false;
+
+            needsVerification = false;
+            verificationInProgress = false;
+            turnstileRenderRequested = false;
+
+            verificationError = null;
+            pendingRequest = null;
 
             await InvokeAsync(StateHasChanged);
-            await ScrollToBottom();
+
+            return;
         }
+
+        isOpen = true;
+
+        await InvokeAsync(StateHasChanged);
+        await ScrollToBottomAsync();
     }
 
-    // Отправка через чипс — мгновенный ответ без LLM
-    private async Task SendChip(string chipId)
+    private async Task SendMessageAsync()
     {
-        if (isLoading) return;
-
-        var label = chipId switch
+        if (
+            disposed ||
+            InputDisabled ||
+            string.IsNullOrWhiteSpace(userInput)
+        )
         {
-            "prices" => L["ChipPrices"].Value,
-            "stories" => L["ChipStories"].Value,
-            "order" => L["ChipOrder"].Value,
-            "contacts" => L["ChipContacts"].Value,
+            return;
+        }
+
+        var message = userInput.Trim();
+
+        userInput = "";
+
+        var request = new PendingRequest
+        {
+            Type = PendingRequestType.Message,
+            Value = message,
+            DisplayText = message
+        };
+
+        AddUserMessage(request.DisplayText);
+
+        await InvokeAsync(StateHasChanged);
+        await ScrollToBottomAsync();
+
+        if (ChatService.HasValidSessionToken)
+        {
+            await ExecuteRequestAsync(request);
+            return;
+        }
+
+        await StartVerificationAsync(request);
+    }
+
+    private async Task SendChipAsync(string chipId)
+    {
+        if (disposed || InputDisabled)
+        {
+            return;
+        }
+
+        var displayText = chipId switch
+        {
+            "prices" => $"💰 {Text("Цены", "Prices")}",
+            "stories" => $"🎬 {Text("Сюжеты", "Stories")}",
+            "order" => $"📋 {Text("Как заказать", "How to order")}",
+            "contacts" => $"📞 {Text("Контакты", "Contacts")}",
             _ => chipId
         };
 
-        messages.Add(new ChatMessage
+        var request = new PendingRequest
         {
-            Text = label,
-            IsUser = true
-        });
+            Type = PendingRequestType.Chip,
+            Value = chipId,
+            DisplayText = displayText
+        };
+
+        AddUserMessage(request.DisplayText);
+
+        await InvokeAsync(StateHasChanged);
+        await ScrollToBottomAsync();
+
+        if (ChatService.HasValidSessionToken)
+        {
+            await ExecuteRequestAsync(request);
+            return;
+        }
+
+        await StartVerificationAsync(request);
+    }
+
+    private async Task StartVerificationAsync(PendingRequest request)
+    {
+        if (disposed)
+        {
+            return;
+        }
+
+        pendingRequest = request;
+
+        verificationVersion++;
+
+        needsVerification = true;
+        verificationInProgress = false;
+        verificationError = null;
+
+        turnstileRenderRequested = true;
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task RetryTurnstileAsync()
+    {
+        if (
+            disposed ||
+            !isOpen ||
+            !needsVerification ||
+            verificationInProgress
+        )
+        {
+            return;
+        }
+
+        verificationVersion++;
+
+        verificationError = null;
+        turnstileRenderRequested = false;
+
+        try
+        {
+            await JsRuntime.InvokeVoidAsync("removeTurnstile");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(
+                $"[Turnstile] Ignore remove before retry: {ex.Message}"
+            );
+        }
+
+        turnstileRenderRequested = true;
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    [JSInvokable]
+    public async Task OnTurnstileVerified(string token)
+    {
+        if (
+            disposed ||
+            !isOpen ||
+            !needsVerification ||
+            verificationInProgress ||
+            string.IsNullOrWhiteSpace(token)
+        )
+        {
+            return;
+        }
+
+        var currentVerificationVersion = verificationVersion;
+
+        verificationInProgress = true;
+        verificationError = null;
+
+        await InvokeAsync(StateHasChanged);
+
+        bool verified;
+
+        try
+        {
+            Console.WriteLine(
+                "[Turnstile] Sending token to Worker /verify."
+            );
+
+            verified = await ChatService.VerifyTurnstileAsync(token);
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine(
+                $"[Turnstile] Unexpected /verify exception: {ex.Message}"
+            );
+
+            verified = false;
+        }
+
+        if (
+            disposed ||
+            !isOpen ||
+            currentVerificationVersion != verificationVersion
+        )
+        {
+            return;
+        }
+
+        verificationInProgress = false;
+
+        if (!verified)
+        {
+            verificationError = Text(
+                "Проверка не пройдена. Попробуйте снова.",
+                "Verification failed. Please try again."
+            );
+
+            try
+            {
+                await JsRuntime.InvokeVoidAsync("resetTurnstile");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(
+                    $"[Turnstile] Ignore reset after failed verification: {ex.Message}"
+                );
+            }
+
+            await InvokeAsync(StateHasChanged);
+
+            return;
+        }
+
+        Console.WriteLine(
+            "[Turnstile] Worker /verify succeeded."
+        );
+
+        var requestToExecute = pendingRequest;
+
+        pendingRequest = null;
+        needsVerification = false;
+        verificationError = null;
+
+        await InvokeAsync(StateHasChanged);
+
+        if (requestToExecute is null)
+        {
+            Console.Error.WriteLine(
+                "[Turnstile] Verification succeeded, but pending request is empty."
+            );
+
+            return;
+        }
+
+        await ExecuteRequestAsync(requestToExecute);
+    }
+
+    [JSInvokable]
+    public async Task OnTurnstileExpired()
+    {
+        if (
+            disposed ||
+            !isOpen ||
+            !needsVerification ||
+            verificationInProgress ||
+            ChatService.HasValidSessionToken
+        )
+        {
+            return;
+        }
+
+        verificationError = Text(
+            "Время проверки истекло. Попробуйте ещё раз.",
+            "Verification expired. Please try again."
+        );
+
+        try
+        {
+            await JsRuntime.InvokeVoidAsync("resetTurnstile");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(
+                $"[Turnstile] Ignore reset after expiry: {ex.Message}"
+            );
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    [JSInvokable]
+    public async Task OnTurnstileError(string? errorCode = null)
+    {
+
+        if (
+            disposed ||
+            !isOpen ||
+            !needsVerification ||
+            verificationInProgress ||
+            ChatService.HasValidSessionToken
+        )
+        {
+            Console.WriteLine(
+                $"[Turnstile] Late browser error ignored: {errorCode ?? "unknown"}"
+            );
+
+            return;
+        }
+
+        Console.Error.WriteLine(
+            $"[Turnstile] Browser widget error: {errorCode ?? "unknown"}"
+        );
+
+        verificationError = errorCode == "600010"
+            ? Text(
+                "Cloudflare не смог выполнить проверку. Нажмите «Повторить проверку».",
+                "Cloudflare could not complete verification. Click Retry verification."
+            )
+            : Text(
+                "Не удалось выполнить проверку безопасности.",
+                "Could not complete security verification."
+            );
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task ExecuteRequestAsync(PendingRequest request)
+    {
+        if (disposed)
+        {
+            return;
+        }
 
         isLoading = true;
         isTyping = true;
 
         await InvokeAsync(StateHasChanged);
-        await Task.Yield();
-        await ScrollToBottom();
+        await ScrollToBottomAsync();
 
         try
         {
-            var reply = await ChatService.GetChipReplyAsync(chipId, currentLanguage);
+            ChatReplyResult result;
+
+            if (request.Type == PendingRequestType.Message)
+            {
+                result = await ChatService.GetBotReplyAsync(
+                    request.Value,
+                    IsRussian ? "ru" : "en"
+                );
+            }
+            else
+            {
+                result = await ChatService.GetChipReplyAsync(
+                    request.Value,
+                    IsRussian ? "ru" : "en"
+                );
+            }
+
+            if (result.RequiresVerification)
+            {
+                isLoading = false;
+                isTyping = false;
+
+                await InvokeAsync(StateHasChanged);
+
+                await StartVerificationAsync(request);
+
+                return;
+            }
 
             messages.Add(new ChatMessage
             {
-                Text = reply,
-                IsUser = false
+                IsUser = false,
+                Text = string.IsNullOrWhiteSpace(result.Reply)
+                    ? Text(
+                        "Не удалось получить ответ. Попробуйте позже.",
+                        "Could not get a response. Please try again later."
+                    )
+                    : result.Reply
             });
         }
         catch (Exception ex)
         {
+            Console.Error.WriteLine(
+                $"[Chat] ExecuteRequestAsync failed: {ex.Message}"
+            );
+
             messages.Add(new ChatMessage
             {
-                Text = $"{L["Error"]}: {ex.Message}",
-                IsUser = false
+                IsUser = false,
+                Text = Text(
+                    "Не удалось получить ответ. Попробуйте позже.",
+                    "Could not get a response. Please try again later."
+                )
             });
         }
         finally
         {
-            isTyping = false;
             isLoading = false;
+            isTyping = false;
 
-            await InvokeAsync(StateHasChanged);
-            await ScrollToBottom();
+            if (!disposed)
+            {
+                await InvokeAsync(StateHasChanged);
+                await ScrollToBottomAsync();
+            }
         }
     }
 
-    private async Task ScrollToBottom()
+    private async Task OnInputKeyUpAsync(KeyboardEventArgs args)
     {
-        await Task.Delay(50);
-        await JsRuntime.InvokeVoidAsync("scrollToBottom", "widgetMessages");
-    }
-
-    private async Task OnKeyUp(KeyboardEventArgs e)
-    {
-        if (e.Key == "Enter" && !isLoading && !string.IsNullOrWhiteSpace(userInput))
+        if (
+            args.Key == "Enter" &&
+            !InputDisabled &&
+            !string.IsNullOrWhiteSpace(userInput)
+        )
         {
-            await SendMessage();
+            await SendMessageAsync();
         }
     }
 
-    private string FormatMessage(string? text)
+    private void AddUserMessage(string text)
     {
-        if (string.IsNullOrWhiteSpace(text)) return string.Empty;
+        messages.Add(new ChatMessage
+        {
+            IsUser = true,
+            Text = text
+        });
+    }
 
+    private async Task ScrollToBottomAsync()
+    {
         try
         {
-            var escapedText = System.Web.HttpUtility.HtmlEncode(text);
-
-            // **жирный** → <strong>
-            var boldRegex = new Regex(@"\*\*([^*]+)\*\*", RegexOptions.Compiled);
-            escapedText = boldRegex.Replace(escapedText, "<strong>$1</strong>");
-
-            // *жирный* → <strong>
-            var boldSingleRegex = new Regex(@"\*([^*\n]+)\*", RegexOptions.Compiled);
-            escapedText = boldSingleRegex.Replace(escapedText, "<strong>$1</strong>");
-
-            // [текст](url) → ссылка
-            var markdownLinkRegex = new Regex(
-                @"\[([^\]]+)\]\((https?://[^\s)]+)\)",
-                RegexOptions.Compiled | RegexOptions.IgnoreCase
+            await JsRuntime.InvokeVoidAsync(
+                "scrollToBottom",
+                "widgetMessages"
             );
-            escapedText = markdownLinkRegex.Replace(escapedText, match =>
-            {
-                var linkText = match.Groups[1].Value;
-                var linkUrl = System.Web.HttpUtility.HtmlDecode(match.Groups[2].Value);
-                return $"<a href=\"{linkUrl}\" target=\"_blank\" " +
-                       $"style=\"color:#00e5ff;text-decoration:underline;font-weight:bold;\">" +
-                       $"{linkText}</a>";
-            });
-
-            // Голые URL → ссылка
-            var bareUrlRegex = new Regex(
-                @"(?<!href="")(?<!\x3e)(https?://[^\s<]+?)(?=[.,!?]?(?:\s|$|<))",
-                RegexOptions.Compiled | RegexOptions.IgnoreCase
-            );
-            escapedText = bareUrlRegex.Replace(escapedText, match =>
-            {
-                var linkUrl = System.Web.HttpUtility.HtmlDecode(match.Value);
-                return $"<a href=\"{linkUrl}\" target=\"_blank\" " +
-                       $"style=\"color:#00e5ff;text-decoration:underline;font-weight:bold;\">" +
-                       $"{linkUrl}</a>";
-            });
-
-            // Переносы строк → <br>
-            escapedText = escapedText.Replace("\n", "<br>");
-
-            return escapedText;
         }
         catch
         {
-            return text ?? string.Empty;
         }
     }
 
-    private class ChatMessage
+    private static string FormatMessage(string? text)
     {
-        public string? Text { get; set; }
-        public bool IsUser { get; set; }
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return string.Empty;
+        }
+
+        var formatted = WebUtility.HtmlEncode(text)
+            .Replace("\r\n", "\n")
+            .Replace("\r", "\n");
+
+        var markdownLinks = new List<string>();
+
+        formatted = MarkdownLinkRegex.Replace(formatted, match =>
+        {
+            var linkText = match.Groups[1].Value;
+            var rawUrl = WebUtility.HtmlDecode(match.Groups[2].Value);
+
+            var anchor = CreateSafeExternalLink(rawUrl, linkText);
+
+            if (anchor is null)
+            {
+                return match.Value;
+            }
+
+            var placeholder =
+                $"\uE000chat-link-{markdownLinks.Count}\uE001";
+
+            markdownLinks.Add(anchor);
+
+            return placeholder;
+        });
+
+        formatted = BoldDoubleRegex.Replace(
+            formatted,
+            "<strong>$1</strong>"
+        );
+
+        formatted = BoldSingleRegex.Replace(
+            formatted,
+            "<strong>$1</strong>"
+        );
+
+        formatted = BareUrlRegex.Replace(formatted, match =>
+        {
+            var originalValue = match.Value;
+
+            var urlWithoutPunctuation =
+                TrimUrlTrailingPunctuation(originalValue);
+
+            if (string.IsNullOrWhiteSpace(urlWithoutPunctuation))
+            {
+                return originalValue;
+            }
+
+            var punctuation =
+                originalValue[urlWithoutPunctuation.Length..];
+
+            var rawUrl =
+                WebUtility.HtmlDecode(urlWithoutPunctuation);
+
+            var anchor = CreateSafeExternalLink(
+                rawUrl,
+                urlWithoutPunctuation
+            );
+
+            return anchor is null
+                ? originalValue
+                : anchor + punctuation;
+        });
+
+        for (var index = 0; index < markdownLinks.Count; index++)
+        {
+            var placeholder =
+                $"\uE000chat-link-{index}\uE001";
+
+            formatted = formatted.Replace(
+                placeholder,
+                markdownLinks[index]
+            );
+        }
+
+        return formatted.Replace("\n", "<br>");
+    }
+
+    private static string TrimUrlTrailingPunctuation(string value)
+    {
+        return value.TrimEnd(
+            '.',
+            ',',
+            '!',
+            '?',
+            ';',
+            ':'
+        );
+    }
+
+
+    private static string? CreateSafeExternalLink(
+        string url,
+        string linkText)
+    {
+        if (
+            !Uri.TryCreate(
+                url,
+                UriKind.Absolute,
+                out var uri
+            )
+        )
+        {
+            return null;
+        }
+
+        var isHttp =
+            uri.Scheme.Equals(
+                Uri.UriSchemeHttp,
+                StringComparison.OrdinalIgnoreCase
+            );
+
+        var isHttps =
+            uri.Scheme.Equals(
+                Uri.UriSchemeHttps,
+                StringComparison.OrdinalIgnoreCase
+            );
+
+        if (!isHttp && !isHttps)
+        {
+            return null;
+        }
+
+        var safeHref =
+            WebUtility.HtmlEncode(uri.AbsoluteUri);
+
+        return
+            $"<a href=\"{safeHref}\" " +
+            $"target=\"_blank\" " +
+            $"rel=\"noopener noreferrer\">" +
+            $"{linkText}</a>";
+    }
+
+    private string Text(string russian, string english)
+    {
+        return IsRussian
+            ? russian
+            : english;
+    }
+
+    public void Dispose()
+    {
+        disposed = true;
+        verificationVersion++;
+
+        dotnetReference?.Dispose();
+        dotnetReference = null;
+    }
+
+    private sealed class ChatMessage
+    {
+        public bool IsUser { get; init; }
+
+        public string Text { get; init; } = "";
+    }
+
+    private sealed class PendingRequest
+    {
+        public PendingRequestType Type { get; init; }
+
+        public string Value { get; init; } = "";
+
+        public string DisplayText { get; init; } = "";
+    }
+
+    private enum PendingRequestType
+    {
+        Message,
+        Chip
     }
 }
