@@ -97,7 +97,7 @@ namespace LaserShowSite.Resources.Pages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 0.3.
+        ///   Looks up a localized string similar to 0.35.
         /// </summary>
         public static string DeliveryRateValue {
             get {

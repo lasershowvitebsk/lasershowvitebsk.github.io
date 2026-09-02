@@ -79,7 +79,7 @@
 
             <!-- 5. Кнопка "Заказать" -->
             <div class="text-center mt-4 mb-5">
-                <a href="/request" class="btn btn-primary px-5 py-2">@L["RequestQuote"]</a>
+                <a href="https://t.me/LaserShowVitebsk_bot" class="btn btn-primary px-5 py-2" target="_blank" rel="noopener noreferrer">@L["RequestQuote"]</a>
             </div>
         </div>
     </div>
@@ -148,8 +148,8 @@
                 basePrice = 400 + (hours - 2) * 100;
             }
 
-            // Доставка: 30 копеек за 1 км (0.30 BYN)
-            decimal travelFee = (decimal)distance * 0.30M;
+            // Доставка: 35 копеек за 1 км (0.35 BYN)
+            decimal travelFee = (decimal)distance * 0.35M;
 
             return basePrice + travelFee;
         }

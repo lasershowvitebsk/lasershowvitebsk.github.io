@@ -130,7 +130,7 @@
     <value>*Base price includes 2 hours of beam show and up to 5 minutes of animation show.</value>
   </data>
   <data name="DeliveryRateValue" xml:space="preserve">
-    <value>0.3</value>
+    <value>0.35</value>
   </data>
   <data name="DistanceLabel" xml:space="preserve">
     <value>Travel outside the city (distance in km)</value>
